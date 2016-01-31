@@ -212,7 +212,7 @@ class statistics:
         player_tier_temp = 0
         try:
             for i in self.account_tanks[uid]:
-                player_tier_temp = player_tier_temp + self.encyclopedia_vehicles[str(i['tank_id'])]['tier'] * i['statistics']['battles']
+                player_tier_temp = player_tier_temp + self.encyclopedia_vehicles[str(i['tank_id'])] * i['statistics']['battles']
             eff_TIER = float(player_tier_temp) / self.account_info[uid]['statistics']['all']['battles']
             eff = int(round(eff_DAMAGE * (10 / (eff_TIER + 2)) * (0.23 + 2 * eff_TIER / 100) + eff_FRAGS * 250 + eff_SPOT * 150 + math.log(eff_CAP + 1, 1.732) * 150 + eff_DEF * 150))
         except KeyError as err:
@@ -226,20 +226,24 @@ class statistics:
     def getEncyclopediaTanks(self):
         try:
             f = open('res_mods/configs/statsInBattle/encyclopedia.json','r')
-            string = f.read()
+            result = f.read()
             f.close()
-            json.loads(string).get('data')
-        except Exception as err:
-            f = open('res_mods/configs/statsInBattle/encyclopedia.json','w')
+            print result
+            result=json.loads(result)#).get('data')
+            print result
+        except Exception:
             request = 'http://api.worldoftanks.ru/wot/encyclopedia/vehicles/?application_id=demo&fields=tier'
-            string = urllib2.urlopen(request, timeout=5).read()
-            f.write(string)
+            response = json.loads(urllib2.urlopen(request).read()).get('data')
+            result={}
+            for id in response:
+                result[id]=response[id]['tier']
+            f = open('res_mods/configs/statsInBattle/encyclopedia.json','w')
+            f.write(json.dumps(result))
             f.close()
-        self.encyclopedia_vehicles = json.loads(string).get('data')
-        self.encyclopedia_vehicles['14353']={}
-        self.encyclopedia_vehicles['14353']['tier']=7 #Aufklarungspanzer panther
-        self.encyclopedia_vehicles['62977']={}
-        self.encyclopedia_vehicles['62977']['tier']=8 #T-44-100(P)
+
+        result['14353']=7 #Aufklarungspanzer panther
+        result['62977']=8 #T-44-100(P)
+        self.encyclopedia_vehicles = result
         return
 
     def getColor(self,rating,value):
