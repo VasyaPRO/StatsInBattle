@@ -228,9 +228,7 @@ class statistics:
             f = open('res_mods/configs/statsInBattle/encyclopedia.json','r')
             result = f.read()
             f.close()
-            print result
-            result=json.loads(result)#).get('data')
-            print result
+            result=json.loads(result)
         except Exception:
             request = 'http://api.worldoftanks.ru/wot/encyclopedia/vehicles/?application_id=demo&fields=tier'
             response = json.loads(urllib2.urlopen(request).read()).get('data')
