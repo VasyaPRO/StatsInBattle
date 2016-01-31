@@ -169,16 +169,10 @@ class config:
         return
 
 class statistics:
-    #account_info={}
-    #account_tanks={}
-    #encyclopedia_vehicles={}
-    #stats={}
     def __init__(self):
         self.getEncyclopediaTanks()
 
     def loadStats(self, ids):
-        #global self.account_info
-        #global self.account_tanks
         idsStr=','.join(ids)
         self.account_info = 'http://api.worldoftanks.{region}/wot/account/info/?application_id=demo&fields=global_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'])
         self.account_tanks = 'http://api.worldoftanks.{region}/wot/account/tanks/?application_id=demo&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config['region'])
@@ -189,8 +183,6 @@ class statistics:
             print '[StatsInBattle] Error stats loading'
             self.stats={}
             return
-        #print self.account_info
-        #print self.account_tanks
         self.stats={}
         for uid in ids:
             if self.account_info[uid]['statistics']['all']['battles']!=0:
@@ -204,8 +196,6 @@ class statistics:
                 self.stats[uid]['colorBattles'] = self.getColor('colorBattles',self.stats[uid]['battles'])
                 self.stats[uid]['colorWinrate'] = self.getColor('colorWinrate',self.stats[uid]['winrate'])
                 self.stats[uid]['colorEFF'] = self.getColor('colorEFF',self.stats[uid]['eff'])
-        #print 'result=',self.stats
-        #print 'stats succefully load'
         return
 
     def resetStats(self):
@@ -214,8 +204,6 @@ class statistics:
         self.stats={}
 
     def getEFF(self, uid):
-        #global encyclopedia_vehicles
-        #print encyclopedia_vehicles
         eff_DAMAGE = self.account_info[uid]['statistics']['all']['damage_dealt'] / float(self.account_info[uid]['statistics']['all']['battles'])
         eff_FRAGS = self.account_info[uid]['statistics']['all']['frags'] / float(self.account_info[uid]['statistics']['all']['battles'])
         eff_SPOT = self.account_info[uid]['statistics']['all']['spotted'] / float(self.account_info[uid]['statistics']['all']['battles'])
@@ -236,7 +224,6 @@ class statistics:
         return eff
 
     def getEncyclopediaTanks(self):
-        #global encyclopedia_vehicles
         try:
             f = open('res_mods/configs/statsInBattle/encyclopedia.json','r')
             string = f.read()
@@ -277,7 +264,6 @@ def new_ArenaDataProvider_buildVehiclesData(self, vehicles, arenaGuiType):
 
 def new_ArenaDataProvider_addVehicleInfoVO(self, vID, vInfoVO):
     global ids
-    #print vInfoVO.player.accountDBID
     uid = str(vInfoVO.player.accountDBID)
     ids.append(uid)
     return old_ArenaDataProvider_addVehicleInfoVO(self, vID, vInfoVO)
@@ -288,15 +274,22 @@ def new_Battle_beforeDelete(self):
     ids=[]
     stats.resetStats()
 
+def new_Battle_afterCreate(self):
+    old_Battle_afterCreate(self)
+    ppState = g_settingsCore.getSetting('ppState')
+    g_settingsCore.applySetting('ppState', 'none')
+    g_settingsCore.applySetting('ppState', ppState)
+
 def new_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False):
     dbID = vInfoVO.player.accountDBID
     playerStats = stats.stats.get(str(dbID), None)
     if playerStats is None:
         return old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False)
     makeItem = old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False)
-    playerFullName = makeItem['playerName']
-    makeItem['vehicleGuiName']=(str(config['battleLoading']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['vehicle']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], vehicle=vInfoVO.vehicleType.shortName, winrate=playerStats['winrate'], battles=playerStats['battles'], kb=playerStats['kb'], nick=playerFullName)
-    makeItem['playerName']=(str(config['battleLoading']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['nick']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], vehicle=vInfoVO.vehicleType.shortName, winrate=playerStats['winrate'], battles=playerStats['battles'], kb=playerStats['kb'], nick=playerFullName)
+    playerStats['vehicle'] = vInfoVO.vehicleType.shortName
+    playerStats['nick'] =  makeItem['playerName']
+    makeItem['vehicleGuiName']=(str(config['battleLoading']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['vehicle']['right'])).format(**playerStats)
+    makeItem['playerName']=(str(config['battleLoading']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['nick']['right'])).format(**playerStats)
     return makeItem
 
 
@@ -306,19 +299,20 @@ def new_StatsForm_getFormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, f
     if getArenaGuiType()==0 and config['disableOnGlobalMap'] == True or playerStats is None:
         return old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
     fullPlayerName, fragsString, vehicleName, strings = old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
-    vehicle = parse(vehicleName.replace('<br/>', ''))[1]
-    nick = parse(fullPlayerName.replace('<br/>', ''))[1]
-    default_color = parse(vehicleName.replace('<br/>', ''))[0]
+    playerStats['vehicle'] = parse(vehicleName.replace('<br/>', ''))[1]
+    playerStats['nick'] = parse(fullPlayerName.replace('<br/>', ''))[1]
+    playerStats['default_color'] = parse(vehicleName.replace('<br/>', ''))[0]
 
     if g_settingsCore.getSetting('ppState') == 'large':
-        fullPlayerName = (str(config['playersPanel']['large']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['nick']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], nick=nick, vehicle=vehicle, winrate=playerStats['winrate'], battles=playerStats['battles'], default_color=default_color, kb=playerStats['kb'])
-        vehicleName = (str(config['playersPanel']['large']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['vehicle']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], nick=nick, vehicle=vehicle, winrate=playerStats['winrate'], battles=playerStats['battles'], default_color=default_color, kb=playerStats['kb'])
+        fullPlayerName = (str(config['playersPanel']['large']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['nick']['right'])).format(**playerStats)
+        vehicleName = (str(config['playersPanel']['large']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['vehicle']['right'])).format(**playerStats)
+
 
     if g_settingsCore.getSetting('ppState') == 'medium2':
-        vehicleName = (str(config['playersPanel']['medium2']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], nick=nick, vehicle=vehicle, winrate=playerStats['winrate'], battles=playerStats['battles'], default_color=default_color, kb=playerStats['kb'])
+        vehicleName = (str(config['playersPanel']['medium2']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerStats)
 
     if g_settingsCore.getSetting('ppState') == 'medium':
-        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], nick=nick, vehicle=vehicle, winrate=playerStats['winrate'], battles=playerStats['battles'], default_color=default_color, kb=playerStats['kb'])
+        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerStats)
     return (fullPlayerName, fragsString, vehicleName, strings)
 
 def new_BattleArenaController_makeHash(self,index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy):
@@ -327,8 +321,10 @@ def new_BattleArenaController_makeHash(self,index, playerFullName, vInfoVO, vSta
     if playerStats is None:
         return old_BattleArenaController_makeHash(self, index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy)
     makeHash = old_BattleArenaController_makeHash(self, index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy)
-    makeHash['vehicle']=(str(config['tab']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['vehicle']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], vehicle=vInfoVO.vehicleType.shortName, winrate=playerStats['winrate'], battles=playerStats['battles'], kb=playerStats['kb'], nick=vInfoVO.player.getPlayerLabel())
-    makeHash['userName']=(str(config['tab']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['nick']['right'])).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], vehicle=vInfoVO.vehicleType.shortName, winrate=playerStats['winrate'], battles=playerStats['battles'], kb=playerStats['kb'], nick=vInfoVO.player.getPlayerLabel())
+    playerStats['vehicle']=vInfoVO.vehicleType.shortName
+    playerStats['nick']=vInfoVO.player.getPlayerLabel()
+    makeHash['vehicle']=(str(config['tab']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['vehicle']['right'])).format(**playerStats)
+    makeHash['userName']=(str(config['tab']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['nick']['right'])).format(**playerStats)
     return makeHash
 
 def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
@@ -362,10 +358,10 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
             squadTeam = 'enemy'
         squadIcon = squadIconTemplate % (squadTeam, teamIdx)
     #----- end -------
-    nick = pName
-    vehicle = vehShortName
-    vehShortName = str(config['marker']['vehicle']).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], vehicle=vehicle, winrate=playerStats['winrate'], battles=playerStats['battles'], kb=playerStats['kb'], nick=nick)
-    pName = str(config['marker']['nick']).format(eff=playerStats['eff'], colorEFF=playerStats['colorEFF'], colorWGR=playerStats['colorWGR'], colorBattles=playerStats['colorBattles'], colorWinrate=playerStats['colorWinrate'], wgr=playerStats['wgr'], vehicle=vehicle, winrate=playerStats['winrate'], battles=playerStats['battles'], kb=playerStats['kb'], nick=nick)
+    playerStats['vehicle']=vehShortName
+    playerStats['nick']=pName
+    vehShortName = str(config['marker']['vehicle']).format(**playerStats)
+    pName = str(config['marker']['nick']).format(**playerStats)
     #----------- original code ------------------
     self.invokeMarker(markerID, 'init', [vType.classTag,
      vType.iconPath,
@@ -392,8 +388,10 @@ def loadMod():
         global old_ArenaDataProvider_buildVehiclesData
         global old_ArenaDataProvider_addVehicleInfoVO
         global old_Battle_beforeDelete
+        global old_Battle_afterCreate
         stats=statistics()
         ids=[]
+        old_Battle_afterCreate = Battle.afterCreate
         old_Battle_beforeDelete = Battle.beforeDelete
         old_ArenaDataProvider_buildVehiclesData = ArenaDataProvider.buildVehiclesData
         old_ArenaDataProvider_addVehicleInfoVO = ArenaDataProvider._ArenaDataProvider__addVehicleInfoVO
