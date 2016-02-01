@@ -276,12 +276,6 @@ def new_Battle_beforeDelete(self):
     ids=[]
     stats.resetStats()
 
-def new_Battle_afterCreate(self):
-    old_Battle_afterCreate(self)
-    ppState = g_settingsCore.getSetting('ppState')
-    g_settingsCore.applySetting('ppState', 'none')
-    g_settingsCore.applySetting('ppState', ppState)
-
 def new_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False):
     dbID = vInfoVO.player.accountDBID
     playerStats = stats.stats.get(str(dbID), None)
@@ -390,10 +384,8 @@ def loadMod():
         global old_ArenaDataProvider_buildVehiclesData
         global old_ArenaDataProvider_addVehicleInfoVO
         global old_Battle_beforeDelete
-        global old_Battle_afterCreate
         stats=statistics()
         ids=[]
-        old_Battle_afterCreate = Battle.afterCreate
         old_Battle_beforeDelete = Battle.beforeDelete
         old_ArenaDataProvider_buildVehiclesData = ArenaDataProvider.buildVehiclesData
         old_ArenaDataProvider_addVehicleInfoVO = ArenaDataProvider._ArenaDataProvider__addVehicleInfoVO
