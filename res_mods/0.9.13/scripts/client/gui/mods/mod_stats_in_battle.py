@@ -174,8 +174,8 @@ class statistics:
 
     def loadStats(self, ids):
         idsStr=','.join(ids)
-        self.account_info = 'http://api.worldoftanks.{region}/wot/account/info/?application_id=demo&fields=global_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'])
-        self.account_tanks = 'http://api.worldoftanks.{region}/wot/account/tanks/?application_id=demo&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config['region'])
+        self.account_info = 'https://api.worldoftanks.{region}/wot/account/info/?application_id=demo&fields=global_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'])
+        self.account_tanks = 'https://api.worldoftanks.{region}/wot/account/tanks/?application_id=demo&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config['region'])
         try:
             self.account_info = json.loads(urllib2.urlopen(self.account_info, timeout=30).read()).get('data', None)
             self.account_tanks = json.loads(urllib2.urlopen(self.account_tanks, timeout=30).read()).get('data', None)
