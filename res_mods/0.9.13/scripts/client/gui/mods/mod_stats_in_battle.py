@@ -3,7 +3,7 @@ import json, time, urllib2, math, os, re
 
 import BigWorld
 
-from gui.battle_control.arena_info import getClientArena, getArenaGuiType
+from gui.battle_control.arena_info import getClientArena, getArenaGuiType, isFalloutBattle
 from account_helpers.settings_core.SettingsCore import g_settingsCore
 from gui.Scaleform.daapi.view.battle.stats_form import _StatsForm
 from gui.battle_control.battle_arena_ctrl import BattleArenaController
@@ -279,7 +279,7 @@ def new_Battle_beforeDelete(self):
 def new_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False):
     dbID = vInfoVO.player.accountDBID
     playerStats = stats.stats.get(str(dbID), None)
-    if playerStats is None:
+    if playerStats is None or isFalloutBattle():
         return old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False)
     makeItem = old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False)
     playerStats['vehicle'] = vInfoVO.vehicleType.shortName
