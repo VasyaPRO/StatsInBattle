@@ -50,12 +50,12 @@
 				"right": "<font color='#{colorWinrate}'>{winrate}%</font> <font color='#{colorEFF}'>{eff}</font><br/>"
 			}
 		},
-		//Формат отображения для режима medium2 (Средние уши, где только никнейм игрока)
+		//Формат отображения для режима medium2  (Средние уши, где только название танка)
 		"medium2": {
 			"left": "<font color='#{colorEFF}'>{eff}</font> <font color='#{colorWinrate}'>{winrate}%</font><br/>",
 			"right": "<font color='#{colorWinrate}'>{winrate}%</font> <font color='#{colorEFF}'>{eff}</font><br/>"
 		},
-		//Формат отображения для режима medium (Средние уши, где только название танка)
+		//Формат отображения для режима medium (Средние уши, где только никнейм игрока)
 		"medium": {
 			"left": "<font color='#{colorEFF}'>{nick}</font><br/>",
 			"right": "<font color='#{colorEFF}'>{nick}</font><br/>"
