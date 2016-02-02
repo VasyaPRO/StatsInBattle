@@ -308,7 +308,7 @@ def new_StatsForm_getFormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, f
         vehicleName = (str(config['playersPanel']['medium2']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerStats)
 
     if g_settingsCore.getSetting('ppState') == 'medium':
-        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerStats)
+        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium']['right'])).format(**playerStats)
     return (fullPlayerName, fragsString, vehicleName, strings)
 
 def new_BattleArenaController_makeHash(self,index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy):
