@@ -1,8 +1,15 @@
-__version__= '1.0'
+__version__= '1.2'
 import json, time, urllib2, math, os, re
 
 import BigWorld
+import game
+import Keys
 
+from Avatar import PlayerAvatar
+from Account import PlayerAccount
+from gui import SystemMessages
+from gui import InputHandler
+from gui.app_loader import g_appLoader
 from gui.battle_control.arena_info import getClientArena, getArenaGuiType, isFalloutBattle
 from account_helpers.settings_core.SettingsCore import g_settingsCore
 from gui.Scaleform.daapi.view.battle.stats_form import _StatsForm
@@ -19,7 +26,7 @@ from CTFManager import g_ctfManager
 
 print '[LOAD] mod StatsInBattle v%s' % __version__
 
-class config:
+class Config:
     config={}
     def __init__(self):
         self.loadConfig()
@@ -41,10 +48,29 @@ class config:
             print '[StatsInBattle] Config is not valid.'
             self.loadDefault()
         return
+    def reloadConfig(self):
+        try:
+            f=open('res_mods/configs/StatsInBattle/StatsInBattle.json','r')
+            self.config=f.read()
+            f.close()
+        except IOError:
+            showMessage('[StatsInBattle] Cannot open config file (res_mods/configs/StatsInBattle/StatsInBattle.json)', 'red')
+            showMessage('[StatsInBattle] Loading default config.', 'gold')
+            self.loadDefault()
+            #print self.isValidConfig(self.config)
+            return
+        self.config=json.loads(self.deleteComments(self.config))
+        if self.isValidConfig(self.config):
+            showMessage('[StatsInBattle] Config successfully loaded.', 'green')
+        else:
+            showMessage('[StatsInBattle] Config is not valid.', 'red')
+            showMessage('[StatsInBattle] Loading default config.', 'gold')
+            self.loadDefault()
+        return
     def deleteComments(self,data):
         result=''
         j=0
-        for i in range(len(data)):
+        for i in range(len(data)-1):
             if data[i]=='/' and data[i+1]=='*':
                 j=data.find('*/',i)+2
                 if j==-1:
@@ -54,7 +80,7 @@ class config:
         data=result
         result=''
         j=0
-        for i in range(len(data)):
+        for i in range(len(data)-1):
             if data[i]=='/'and data[i+1]=='/':
                 j=data.find('\n',i)
                 if j==-1:
@@ -66,8 +92,8 @@ class config:
     def isValidConfig(self,cfg):
         try:
             cfg['enable']
+            cfg['reloadKey']
             cfg['region']
-            cfg['disableOnGlobalMap']
             cfg['roundWinrate']
             cfg['playersPanel']['enable']
             cfg['playersPanel']['large']['nick']['left']
@@ -101,14 +127,16 @@ class config:
             return True
         except KeyError:
             return False
+        except Exception as err:
+            return False
 
 
     def loadDefault(self):
         print '[StatsInBattle] Loading default config.'
         self.config={
             'enable': True,
+            'reloadKey': 'KEY_F9',
             'region': 'ru',
-            'disableOnGlobalMap': True,
             'roundWinrate': 0,
             'playersPanel':{
                 'enable': True,
@@ -181,27 +209,25 @@ class statistics:
             self.account_tanks = json.loads(urllib2.urlopen(self.account_tanks, timeout=30).read()).get('data', None)
         except IOError:
             print '[StatsInBattle] Error stats loading'
-            self.stats={}
             return
-        self.stats={}
+    def getStats(self,ids):
+        global playersInfo
         for uid in ids:
-            if self.account_info[uid]['statistics']['all']['battles']!=0:
-                self.stats[uid] = {}
-                self.stats[uid]['wgr'] = self.account_info[uid]['global_rating']
-                self.stats[uid]['battles'] = self.account_info[uid]['statistics']['all']['battles']
-                self.stats[uid]['winrate'] = round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], config['roundWinrate']) if config['roundWinrate']!=0 else int(round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], 0))
-                self.stats[uid]['kb'] = str(int(round(self.account_info[uid]['statistics']['all']['battles']/1000,0)))+'k' if self.account_info[uid]['statistics']['all']['battles']>=1000 else self.account_info[uid]['statistics']['all']['battles']
-                self.stats[uid]['eff'] = self.getEFF(uid)
-                self.stats[uid]['colorWGR'] = self.getColor('colorWGR',self.stats[uid]['wgr'])
-                self.stats[uid]['colorBattles'] = self.getColor('colorBattles',self.stats[uid]['battles'])
-                self.stats[uid]['colorWinrate'] = self.getColor('colorWinrate',self.stats[uid]['winrate'])
-                self.stats[uid]['colorEFF'] = self.getColor('colorEFF',self.stats[uid]['eff'])
+            if self.account_info[uid] and self.account_info[uid]['statistics']['all']['battles']!=0:
+                playersInfo[uid]['wgr'] = self.account_info[uid]['global_rating']
+                playersInfo[uid]['battles'] = self.account_info[uid]['statistics']['all']['battles']
+                playersInfo[uid]['winrate'] = round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], config['roundWinrate']) if config['roundWinrate']!=0 else int(round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], 0))
+                playersInfo[uid]['kb'] = str(int(round(self.account_info[uid]['statistics']['all']['battles']/1000,0)))+'k' if self.account_info[uid]['statistics']['all']['battles']>=1000 else self.account_info[uid]['statistics']['all']['battles']
+                playersInfo[uid]['eff'] = self.getEFF(uid)
+                playersInfo[uid]['colorWGR'] = self.getColor('colorWGR',playersInfo[uid]['wgr'])
+                playersInfo[uid]['colorBattles'] = self.getColor('colorBattles',playersInfo[uid]['battles'])
+                playersInfo[uid]['colorWinrate'] = self.getColor('colorWinrate',playersInfo[uid]['winrate'])
+                playersInfo[uid]['colorEFF'] = self.getColor('colorEFF',playersInfo[uid]['eff'])
         return
 
     def resetStats(self):
         self.account_info={}
         self.account_tanks={}
-        self.stats={}
 
     def getEFF(self, uid):
         eff_DAMAGE = self.account_info[uid]['statistics']['all']['damage_dealt'] / float(self.account_info[uid]['statistics']['all']['battles'])
@@ -230,7 +256,7 @@ class statistics:
             f.close()
             result=json.loads(result)
         except Exception:
-            request = 'https://api.worldoftanks.ru/wot/encyclopedia/vehicles/?application_id=demo&fields=tier'
+            request = 'https://api.worldoftanks.{region}/wot/encyclopedia/vehicles/?application_id=demo&fields=tier'.format(region=config['region'])
             response = json.loads(urllib2.urlopen(request).read()).get('data')
             result={}
             for id in response:
@@ -241,6 +267,8 @@ class statistics:
 
         result['14353']=7 #Aufklarungspanzer panther
         result['62977']=8 #T-44-100(P)
+        result['62993']=7 #VK 45.03
+        result['62225']=10 #121B
         self.encyclopedia_vehicles = result
         return
 
@@ -251,9 +279,43 @@ class statistics:
                 if value>=config['colors'][rating][i]:
                     color=config['colors']['colorCodes'][i]
         return color
+def showMessage(text, color='green'):
+    if g_appLoader.getDefBattleApp() is not None:
+        g_appLoader.getDefBattleApp().call('battle.PlayerMessagesPanel.ShowMessage', [0, text, color])
+    elif isinstance(BigWorld.player(), PlayerAccount):
+        SystemMessages.pushMessage(text, type=SystemMessages.SM_TYPE.Warning)
+    else:
+        print text
+def showMessageOnPanel(panel, key, msgText, color):
+    if g_appLoader.getDefBattleApp() is not None and panel in ('VehicleErrorsPanel', 'VehicleMessagesPanel', 'PlayerMessagesPanel'):
+        g_appLoader.getDefBattleApp().call('battle.' + panel + '.ShowMessage', [key, msgText, color])
+    return
+
+def inject_handle_key_event(event):
+    is_down, key, mods, is_repeat = game.convertKeyEvent(event)
+    isInBattle = g_appLoader.getDefBattleApp()
+    try:
+        global config, ids
+        if key is Keys.__getattribute__(config['reloadKey']) and is_down:# and mods is Keys.MODIFIER_ALT:
+            Config.reloadConfig()
+            config=Config.config
+            if isInBattle:
+                old_ids=ids
+                ids=[]
+                for pl in getClientArena().vehicles.values():
+                    if str(pl['accountDBID'])!='0':
+                        ids.append(str(pl['accountDBID']))
+                if old_ids!=ids:
+                    stats.loadStats(ids)
+                stats.getStats(ids)
+    except Exception as e:
+        print ('error in inject_handle_key_event', e)
+
+InputHandler.g_instance.onKeyDown += inject_handle_key_event
+InputHandler.g_instance.onKeyUp += inject_handle_key_event
+
 
 def parse(string):
-    import re
     try:
         return (re.match("<font color='#(.*?)'>(.*?)</font>", string).group(1), re.match("<font color='#(.*?)'>(.*?)</font>", string).group(2))
     except:
@@ -261,72 +323,79 @@ def parse(string):
 
 def new_ArenaDataProvider_buildVehiclesData(self, vehicles, arenaGuiType):
     old_ArenaDataProvider_buildVehiclesData(self, vehicles, arenaGuiType)
-    if ids.count('0') == 0: #Если это не боевое обучение
-        stats.loadStats(ids)
+    stats.loadStats(ids)
+    stats.getStats(ids)
 
 def new_ArenaDataProvider_addVehicleInfoVO(self, vID, vInfoVO):
     global ids
+    global playersInfo
+    vTypeVO=vInfoVO.vehicleType
     uid = str(vInfoVO.player.accountDBID)
-    ids.append(uid)
+    playersInfo[uid]={}
+    playersInfo[uid]['team'] = vInfoVO.team
+    playersInfo[uid]['vehicle'] = vInfoVO.vehicleType.shortName
+    playersInfo[uid]['name'] = vInfoVO.player.name
+    playersInfo[uid]['clan'] = vInfoVO.player.clanAbbrev
+    playersInfo[uid]['nick'] = "%s[%s]" % (vInfoVO.player.name, vInfoVO.player.clanAbbrev) if vInfoVO.player.clanAbbrev else vInfoVO.player.name
+    if uid!='0':
+        ids.append(uid)
     return old_ArenaDataProvider_addVehicleInfoVO(self, vID, vInfoVO)
 
 def new_Battle_beforeDelete(self):
     global ids
+    global playersInfo
     old_Battle_beforeDelete(self)
     ids=[]
+    playersInfo={}
     stats.resetStats()
 
 def new_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False):
     dbID = vInfoVO.player.accountDBID
-    playerStats = stats.stats.get(str(dbID), None)
-    if playerStats is None or isFalloutBattle():
-        return old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False)
-    makeItem = old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False)
-    playerStats['vehicle'] = vInfoVO.vehicleType.shortName
-    playerStats['nick'] =  makeItem['playerName']
-    makeItem['vehicleGuiName']=(str(config['battleLoading']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['vehicle']['right'])).format(**playerStats)
-    makeItem['playerName']=(str(config['battleLoading']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['nick']['right'])).format(**playerStats)
+    playerInfo = playersInfo.get(str(dbID), None)
+    if playerInfo.get('battles') is None or isFalloutBattle():
+        return old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout)
+    makeItem = old_BattleLoading_makeItem(self, vInfoVO, viStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout)
+    makeItem['clanAbbrev'] = ''
+    makeItem['vehicleGuiName']=(str(config['battleLoading']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['vehicle']['right'])).format(**playerInfo)
+    makeItem['playerName']=(str(config['battleLoading']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['battleLoading']['nick']['right'])).format(**playerInfo)
     return makeItem
 
 
 def new_StatsForm_getFormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName):
     dbID = vInfoVO.player.accountDBID
-    playerStats = stats.stats.get(str(dbID), None)
-    if getArenaGuiType()==0 and config['disableOnGlobalMap'] == True or playerStats is None:
+    playerInfo = playersInfo.get(str(dbID), None)
+    if playerInfo.get('battles') is None:
         return old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
     fullPlayerName, fragsString, vehicleName, strings = old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
-    playerStats['vehicle'] = parse(vehicleName.replace('<br/>', ''))[1]
-    playerStats['nick'] = parse(fullPlayerName.replace('<br/>', ''))[1]
-    playerStats['default_color'] = parse(vehicleName.replace('<br/>', ''))[0]
+    playerInfo['default_color'] = parse(vehicleName.replace('<br/>', ''))[0]
 
     if g_settingsCore.getSetting('ppState') == 'large':
-        fullPlayerName = (str(config['playersPanel']['large']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['nick']['right'])).format(**playerStats)
-        vehicleName = (str(config['playersPanel']['large']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['vehicle']['right'])).format(**playerStats)
+        fullPlayerName = (str(config['playersPanel']['large']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['nick']['right'])).format(**playerInfo)
+        vehicleName = (str(config['playersPanel']['large']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['vehicle']['right'])).format(**playerInfo)
 
 
     if g_settingsCore.getSetting('ppState') == 'medium2':
-        vehicleName = (str(config['playersPanel']['medium2']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerStats)
+        vehicleName = (str(config['playersPanel']['medium2']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerInfo)
 
     if g_settingsCore.getSetting('ppState') == 'medium':
-        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium']['right'])).format(**playerStats)
+        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium']['right'])).format(**playerInfo)
     return (fullPlayerName, fragsString, vehicleName, strings)
 
 def new_BattleArenaController_makeHash(self,index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy):
     dbID = vInfoVO.player.accountDBID
-    playerStats = stats.stats.get(str(dbID), None)
-    if playerStats is None:
+    playerInfo = playersInfo.get(str(dbID), None)
+    if playerInfo.get('battles') is None:
         return old_BattleArenaController_makeHash(self, index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy)
     makeHash = old_BattleArenaController_makeHash(self, index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy)
-    playerStats['vehicle']=vInfoVO.vehicleType.shortName
-    playerStats['nick']=vInfoVO.player.getPlayerLabel()
-    makeHash['vehicle']=(str(config['tab']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['vehicle']['right'])).format(**playerStats)
-    makeHash['userName']=(str(config['tab']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['nick']['right'])).format(**playerStats)
+    makeHash['clanAbbrev'] = ''
+    makeHash['vehicle']=(str(config['tab']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['vehicle']['right'])).format(**playerInfo)
+    makeHash['userName']=(str(config['tab']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['tab']['nick']['right'])).format(**playerInfo)
     return makeHash
 
 def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
     dbID = vInfo.player.accountDBID
-    playerStats = stats.stats.get(str(dbID), None)
-    if playerStats is None:
+    playerInfo = playersInfo.get(str(dbID), None)
+    if playerInfo.get('battles') is None:
         return old_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps)
     #----------- original code ------------------
     vTypeDescr = vProxy.typeDescriptor
@@ -354,10 +423,9 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
             squadTeam = 'enemy'
         squadIcon = squadIconTemplate % (squadTeam, teamIdx)
     #----- end -------
-    playerStats['vehicle']=vehShortName
-    playerStats['nick']=pName
-    vehShortName = str(config['marker']['vehicle']).format(**playerStats)
-    pName = str(config['marker']['nick']).format(**playerStats)
+    clanAbbrev = ''
+    vehShortName = str(config['marker']['vehicle']).format(**playerInfo)
+    pName = str(config['marker']['nick']).format(**playerInfo)
     #----------- original code ------------------
     self.invokeMarker(markerID, 'init', [vType.classTag,
      vType.iconPath,
@@ -377,15 +445,18 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
      squadIcon])
     return markerID
     #----------- end -----------------
+
 def loadMod():
     if config['enable']:
         global stats
         global ids
+        global playersInfo
         global old_ArenaDataProvider_buildVehiclesData
         global old_ArenaDataProvider_addVehicleInfoVO
         global old_Battle_beforeDelete
         stats=statistics()
         ids=[]
+        playersInfo={}
         old_Battle_beforeDelete = Battle.beforeDelete
         old_ArenaDataProvider_buildVehiclesData = ArenaDataProvider.buildVehiclesData
         old_ArenaDataProvider_addVehicleInfoVO = ArenaDataProvider._ArenaDataProvider__addVehicleInfoVO
@@ -408,6 +479,6 @@ def loadMod():
             global old_MarkersManager_addVehicleMarker
             old_MarkersManager_addVehicleMarker = MarkersManager.addVehicleMarker
             MarkersManager.addVehicleMarker = new_MarkersManager_addVehicleMarker
-config=config()
-config=config.config
+Config=Config()
+config=Config.config
 loadMod()
