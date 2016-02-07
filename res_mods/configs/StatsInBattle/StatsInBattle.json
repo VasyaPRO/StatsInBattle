@@ -1,7 +1,7 @@
 /*
 Информация:
 	Статистика игроков в бою
-	Версия: 1.0
+	Версия: 1.2
 	Версия клиента игры: 0.9.13
 	Автор: VasyaPRO_2014
 	Спасибо Monstrofil и BirrettaMalefica (Евросервер)
@@ -19,17 +19,19 @@
 		{colorWinrate} - динамический цвет по проценту побед
 		{colorBattles} - динамический цвет по количеству боев
 	Стандартные:
-		{nick} - ник игрока
+		{name} - никнейм игрока
+		{nick} - никнейм игрока с названием клана
+		{clan} - название клана (без скобок)
 		{vehicle} - название танка
 		{default_color} - стандартный цвет в ушах (Работает только в ушах)
 */
 {
 	//Глобальный переключатель работы мода
 	"enable": true,
+	//Горячая клавиша перезагрузки конфига (см. список клавиш в конце конфига)
+	"reloadKey": "KEY_F9",
 	//Домен, который используется при составлении запроса в API. Может принимать значение: ru, eu, com.
 	"region": "ru", 
-	//Отключить в боях на ГК. (Внимание! Отключение этой опции может стать причиной сильного понижения производительности в боях на ГК!)
-	"disableOnGlobalMap": true, 
 	//Количество цифр после запятой в проценте побед
 	"roundWinrate": 0,
 	//Панель игроков ("уши" команд)
@@ -50,7 +52,7 @@
 				"right": "<font color='#{colorWinrate}'>{winrate}%</font> <font color='#{colorEFF}'>{eff}</font><br/>"
 			}
 		},
-		//Формат отображения для режима medium2  (Средние уши, где только название танка)
+		//Формат отображения для режима medium2 (Средние уши, где только название танка)
 		"medium2": {
 			"left": "<font color='#{colorEFF}'>{eff}</font> <font color='#{colorWinrate}'>{winrate}%</font><br/>",
 			"right": "<font color='#{colorWinrate}'>{winrate}%</font> <font color='#{colorEFF}'>{eff}</font><br/>"
@@ -77,6 +79,8 @@
 			"right": "{eff} {winrate}% {kb}"
 		}
 	},
+	//Формат отображения статистики в окне загрузки в бой
+	//Отображение цветов тоже не работает.
 	"battleLoading": {
 		//Включить модуль battleLoading
 		"enable": true,
@@ -91,12 +95,14 @@
 			"right": "{eff} {winrate}% {kb}"
 		}
 	},
+	//Формат отображения статистики в маркерах над техникой
 	"marker": {
+		//Включить модуль marker
 		"enable": true,
 		//Формат отображения никнейма
 		"nick": "{winrate}% {nick}",
 		//Формат отображения названия техники
-		"vehicle": "{eff} {vehicle}"
+		"vehicle": "{eff} {vehicle} {kb}"
 	},
 	//Настройка цветов
 	//Внимание, количество елементов во всех списках должно совпадать!
@@ -113,3 +119,13 @@
 		"colorBattles": [1, 2000, 6000, 16000, 30000, 43000]
 	}
 }
+/* KEY_NONE, KEY_MOUSE0, KEY_MOUSE1, KEY_MOUSE2, KEY_MOUSE3, KEY_MOUSE4, KEY_MOUSE5, KEY_MOUSE6, KEY_MOUSE7, KEY_A, KEY_B,
+ KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, KEY_J, KEY_K, KEY_L, KEY_M, KEY_N, KEY_O, KEY_P, KEY_Q, KEY_R, KEY_S,
+ KEY_T, KEY_U, KEY_V, KEY_W, KEY_X, KEY_Y, KEY_Z, KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9,
+ KEY_NUMPAD0, KEY_NUMPAD1, KEY_NUMPAD2, KEY_NUMPAD3, KEY_NUMPAD4, KEY_NUMPAD5, KEY_NUMPAD6, KEY_NUMPAD7, KEY_NUMPAD8,
+ KEY_NUMPAD9, KEY_NUMPADSTAR, KEY_ADD, KEY_NUMPADENTER, KEY_NUMPADMINUS, KEY_NUMPADPERIOD, KEY_NUMPADSLASH, KEY_F1,
+ KEY_F2, KEY_F3, KEY_F4, KEY_F5, KEY_F6, KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12, KEY_F13, KEY_F14, KEY_F15,
+ KEY_BACKSPACE, KEY_TAB, KEY_RETURN, KEY_RSHIFT, KEY_LSHIFT, KEY_RCONTROL, KEY_LCONTROL, KEY_RALT, KEY_LALT, KEY_PAUSE,
+ KEY_CAPSLOCK, KEY_ESCAPE, KEY_SPACE, KEY_PGUP, KEY_PGDN, KEY_END, KEY_HOME, KEY_LEFTARROW, KEY_UPARROW, KEY_RIGHTARROW,
+ KEY_DOWNARROW, KEY_INSERT, KEY_DELETE, KEY_NUMLOCK, KEY_SCROLL, KEY_SEMICOLON, KEY_EQUALS, KEY_COMMA, KEY_MINUS, KEY_PERIOD,
+ KEY_SLASH, KEY_LBRACKET, KEY_BACKSLASH, KEY_RBRACKET, KEY_APOSTROPHE, KEY_AX, KEY_OEM_102 */
