@@ -1,4 +1,4 @@
-__version__= '1.2'
+__version__= '1.3'
 import json, time, urllib2, math, os, re
 
 import BigWorld
@@ -202,7 +202,7 @@ class statistics:
 
     def loadStats(self, ids):
         idsStr=','.join(ids)
-        self.account_info = 'https://api.worldoftanks.{region}/wot/account/info/?application_id=demo&fields=global_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'])
+        self.account_info = 'https://api.worldoftanks.{region}/wot/account/info/?application_id=demo&fields=client_language%2Cglobal_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'])
         self.account_tanks = 'https://api.worldoftanks.{region}/wot/account/tanks/?application_id=demo&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config['region'])
         try:
             self.account_info = json.loads(urllib2.urlopen(self.account_info, timeout=30).read()).get('data', None)
@@ -219,6 +219,7 @@ class statistics:
                 playersInfo[uid]['winrate'] = round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], config['roundWinrate']) if config['roundWinrate']!=0 else int(round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], 0))
                 playersInfo[uid]['kb'] = str(int(round(self.account_info[uid]['statistics']['all']['battles']/1000,0)))+'k' if self.account_info[uid]['statistics']['all']['battles']>=1000 else self.account_info[uid]['statistics']['all']['battles']
                 playersInfo[uid]['eff'] = self.getEFF(uid)
+                playersInfo[uid]['lang'] = self.account_info[uid]['client_language']
                 playersInfo[uid]['colorWGR'] = self.getColor('colorWGR',playersInfo[uid]['wgr'])
                 playersInfo[uid]['colorBattles'] = self.getColor('colorBattles',playersInfo[uid]['battles'])
                 playersInfo[uid]['colorWinrate'] = self.getColor('colorWinrate',playersInfo[uid]['winrate'])
@@ -268,7 +269,10 @@ class statistics:
         result['14353']=7 #Aufklarungspanzer panther
         result['62977']=8 #T-44-100(P)
         result['62993']=7 #VK 45.03
-        result['62225']=10 #121B
+        result['62225']=7 #VK 45.02 (P) Ausf. B7
+        result['57089']=7 #Т-44-85
+        result['63537']=10 #121B
+        
         self.encyclopedia_vehicles = result
         return
 
@@ -291,6 +295,7 @@ def showMessageOnPanel(panel, key, msgText, color):
         g_appLoader.getDefBattleApp().call('battle.' + panel + '.ShowMessage', [key, msgText, color])
     return
 
+    
 def inject_handle_key_event(event):
     is_down, key, mods, is_repeat = game.convertKeyEvent(event)
     isInBattle = g_appLoader.getDefBattleApp()
@@ -335,7 +340,8 @@ def new_ArenaDataProvider_addVehicleInfoVO(self, vID, vInfoVO):
     playersInfo[uid]['team'] = vInfoVO.team
     playersInfo[uid]['vehicle'] = vInfoVO.vehicleType.shortName
     playersInfo[uid]['name'] = vInfoVO.player.name
-    playersInfo[uid]['clan'] = vInfoVO.player.clanAbbrev
+    playersInfo[uid]['clan'] = "[%s]" % vInfoVO.player.clanAbbrev if vInfoVO.player.clanAbbrev else ""
+    playersInfo[uid]['clannb'] = vInfoVO.player.clanAbbrev
     playersInfo[uid]['nick'] = "%s[%s]" % (vInfoVO.player.name, vInfoVO.player.clanAbbrev) if vInfoVO.player.clanAbbrev else vInfoVO.player.name
     if uid!='0':
         ids.append(uid)
@@ -482,3 +488,4 @@ def loadMod():
 Config=Config()
 config=Config.config
 loadMod()
+
