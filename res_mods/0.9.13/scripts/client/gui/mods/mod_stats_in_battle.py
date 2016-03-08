@@ -23,6 +23,7 @@ from gui.Scaleform import VoiceChatInterface
 from gui.battle_control.arena_info.arena_vos import VehicleActions
 from gui.battle_control import g_sessionProvider, arena_info
 from CTFManager import g_ctfManager
+from messenger.gui.Scaleform.BattleEntry import BattleEntry 
 
 print '[LOAD] mod StatsInBattle v%s' % __version__
 
@@ -452,6 +453,12 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
     return markerID
     #----------- end -----------------
 
+def new_BattleEntry_onAddToIgnored(self, _, uid, userName):
+    old_BattleEntry_onAddToIgnored(self, _, uid, playersInfo[str(int(uid))]['name'])
+
+def new_BattleEntry_onAddToFriends(self, _, uid, userName):
+    old_BattleEntry_onAddToFriends(self, _, uid, playersInfo[str(int(uid))]['name'])
+
 def loadMod():
     if config['enable']:
         global stats
@@ -460,12 +467,18 @@ def loadMod():
         global old_ArenaDataProvider_buildVehiclesData
         global old_ArenaDataProvider_addVehicleInfoVO
         global old_Battle_beforeDelete
+        global old_BattleEntry_onAddToIgnored
+        global old_BattleEntry_onAddToFriends
         stats=statistics()
         ids=[]
         playersInfo={}
         old_Battle_beforeDelete = Battle.beforeDelete
         old_ArenaDataProvider_buildVehiclesData = ArenaDataProvider.buildVehiclesData
         old_ArenaDataProvider_addVehicleInfoVO = ArenaDataProvider._ArenaDataProvider__addVehicleInfoVO
+        old_BattleEntry_onAddToIgnored = BattleEntry._BattleEntry__onAddToIgnored 
+        old_BattleEntry_onAddToFriends = BattleEntry._BattleEntry__onAddToFriends
+        BattleEntry._BattleEntry__onAddToIgnored = new_BattleEntry_onAddToIgnored 
+        BattleEntry._BattleEntry__onAddToFriends = new_BattleEntry_onAddToFriends 
         Battle.beforeDelete=new_Battle_beforeDelete
         ArenaDataProvider.buildVehiclesData = new_ArenaDataProvider_buildVehiclesData
         ArenaDataProvider._ArenaDataProvider__addVehicleInfoVO = new_ArenaDataProvider_addVehicleInfoVO
@@ -488,4 +501,5 @@ def loadMod():
 Config=Config()
 config=Config.config
 loadMod()
+
 
