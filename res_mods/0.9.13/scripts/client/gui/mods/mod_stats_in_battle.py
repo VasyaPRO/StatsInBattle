@@ -1,4 +1,4 @@
-__version__= '1.3'
+__version__= '1.4'
 import json, time, urllib2, math, os, re
 
 import BigWorld
@@ -95,6 +95,7 @@ class Config:
             cfg['enable']
             cfg['reloadKey']
             cfg['region']
+            cfg['applicationID']
             cfg['roundWinrate']
             cfg['playersPanel']['enable']
             cfg['playersPanel']['large']['nick']['left']
@@ -138,6 +139,7 @@ class Config:
             'enable': True,
             'reloadKey': 'KEY_F9',
             'region': 'ru',
+            'applicationID': 'demo',
             'roundWinrate': 0,
             'playersPanel':{
                 'enable': True,
@@ -203,8 +205,8 @@ class statistics:
 
     def loadStats(self, ids):
         idsStr=','.join(ids)
-        self.account_info = 'https://api.worldoftanks.{region}/wot/account/info/?application_id=demo&fields=client_language%2Cglobal_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'])
-        self.account_tanks = 'https://api.worldoftanks.{region}/wot/account/tanks/?application_id=demo&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config['region'])
+        self.account_info = 'https://api.worldoftanks.{region}/wot/account/info/?application_id={appId}&fields=client_language%2Cglobal_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config['region'], appId=config['applicationID'])
+        self.account_tanks = 'https://api.worldoftanks.{region}/wot/account/tanks/?application_id={appId}&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config['region'], appId=config['applicationID'])
         try:
             self.account_info = json.loads(urllib2.urlopen(self.account_info, timeout=30).read()).get('data', None)
             self.account_tanks = json.loads(urllib2.urlopen(self.account_tanks, timeout=30).read()).get('data', None)
@@ -258,7 +260,7 @@ class statistics:
             f.close()
             result=json.loads(result)
         except Exception:
-            request = 'https://api.worldoftanks.{region}/wot/encyclopedia/vehicles/?application_id=demo&fields=tier'.format(region=config['region'])
+            request = 'https://api.worldoftanks.{region}/wot/encyclopedia/vehicles/?application_id={appId}&fields=tier'.format(region=config['region'],appId=config['applicationID'])
             response = json.loads(urllib2.urlopen(request).read()).get('data')
             result={}
             for id in response:
@@ -373,11 +375,10 @@ def new_StatsForm_getFormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, f
     playerInfo = playersInfo.get(str(dbID), None)
     if playerInfo.get('battles') is None:
         return old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
-    fullPlayerName, fragsString, vehicleName, strings = old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
+    fullPlayerName, fragsString, vehicleName, strings, formatPanels = old_StatsFormget_FormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, fullPlayerName)
     playerInfo['default_color'] = parse(vehicleName.replace('<br/>', ''))[0]
-
     if g_settingsCore.getSetting('ppState') == 'large':
-        fullPlayerName = (str(config['playersPanel']['large']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['nick']['right'])).format(**playerInfo)
+        formatPanels = (str(config['playersPanel']['large']['nick']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['nick']['right'])).format(**playerInfo)
         vehicleName = (str(config['playersPanel']['large']['vehicle']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['large']['vehicle']['right'])).format(**playerInfo)
 
 
@@ -385,8 +386,8 @@ def new_StatsForm_getFormattedStrings(self, vInfoVO, vStatsVO, viStatsVO, ctx, f
         vehicleName = (str(config['playersPanel']['medium2']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium2']['right'])).format(**playerInfo)
 
     if g_settingsCore.getSetting('ppState') == 'medium':
-        fullPlayerName = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium']['right'])).format(**playerInfo)
-    return (fullPlayerName, fragsString, vehicleName, strings)
+        formatPanels = (str(config['playersPanel']['medium']['left']) if vInfoVO.team == BigWorld.player().team else str(config['playersPanel']['medium']['right'])).format(**playerInfo)
+    return (fullPlayerName, fragsString, vehicleName, strings, formatPanels)
 
 def new_BattleArenaController_makeHash(self,index, playerFullName, vInfoVO, vStatsVO, viStatsVO, ctx, playerAccountID, inviteSendingProhibited, invitesReceivingProhibited, isEnemy):
     dbID = vInfoVO.player.accountDBID
@@ -419,7 +420,7 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
     fullName, pName, clanAbbrev, regionCode, vehShortName = battleCtx.getFullPlayerNameWithParts(vProxy.id)
     vType = vInfo.vehicleType
     squadIcon = ''
-    if arena_info.getIsMultiteam() and vInfo.isSquadMan():
+    if arena_info.isFalloutMultiTeam() and vInfo.isSquadMan():
         teamIdx = g_sessionProvider.getArenaDP().getMultiTeamsIndexes()[vInfo.team]
         squadIconTemplate = '%s%d'
         if guiProps.name() == 'squadman':
@@ -448,7 +449,7 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
      speaking,
      hunting,
      guiProps.base,
-     g_ctfManager.isFlagBearer(vInfo.vehicleID),
+     g_ctfManager.getVehicleCarriedFlagID(vInfo.vehicleID) is not None,
      squadIcon])
     return markerID
     #----------- end -----------------
@@ -501,5 +502,3 @@ def loadMod():
 Config=Config()
 config=Config.config
 loadMod()
-
-
