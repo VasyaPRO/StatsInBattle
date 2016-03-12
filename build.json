@@ -1,0 +1,10 @@
+{
+	"Version": "1.4.1",
+	"VersionWOT": "0.9.14",
+	"files":
+	[
+		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle.py",
+		"res_mods\\configs\\StatsInBattle\\StatsInBattle.json",
+		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle\\flags\\*"
+	]
+}
