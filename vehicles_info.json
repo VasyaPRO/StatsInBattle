@@ -1,4 +1,10 @@
 {
+	"62993": {
+		"level": 7,
+		"type": "heavyTank",
+		"name": "VK 45.03",
+		"nation": "germany"
+	}
 	"62977": {
 		"level": 8,
 		"type": "mediumTank",
