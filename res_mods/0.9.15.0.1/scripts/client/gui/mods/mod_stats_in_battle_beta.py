@@ -1,5 +1,4 @@
-__version__ = '1.5'
-__author__ = 'VasyaPRO_2014'
+__version__= '1.4.1'
 import json, time, urllib2, math, os, re
 
 import BigWorld
@@ -26,6 +25,9 @@ from gui.battle_control import g_sessionProvider, arena_info
 from CTFManager import g_ctfManager
 from messenger.gui.Scaleform.BattleEntry import BattleEntry 
 
+from gui.shared.utils.requesters.DossierRequester import UserDossier
+from functools import partial
+import dossiers2
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
 
 class Config:
@@ -53,7 +55,6 @@ class Config:
             cfg['reloadKey']
             cfg['region']
             cfg['applicationID']
-            cfg['requestTimeout']
             cfg['roundWinrate']
             cfg['playersPanel']['enable']
             cfg['playersPanel']['large']['nick']['left']
@@ -104,7 +105,6 @@ class Config:
             'reloadKey': 'KEY_F9',
             'region': 'ru',
             'applicationID': 'demo',
-            'requestTimeout': 5,
             'roundWinrate': 0,
             'playersPanel':{
                 'enable': True,
@@ -173,8 +173,8 @@ class statistics:
         self.account_info = 'https://api.worldoftanks.{region}/wot/account/info/?application_id={appId}&fields=client_language%2Cglobal_rating%2Cstatistics.all.battles%2Cstatistics.all.wins%2Cstatistics.all.damage_dealt%2Cstatistics.all.frags%2Cstatistics.all.spotted%2Cstatistics.all.capture_points%2Cstatistics.all.dropped_capture_points&account_id={id}'.format(id=idsStr, region=config('region'), appId=config('applicationID'))
         self.account_tanks = 'https://api.worldoftanks.{region}/wot/account/tanks/?application_id={appId}&fields=statistics.battles%2Ctank_id&account_id={id}'.format(id=idsStr, region=config('region'), appId=config('applicationID'))
         try:
-            self.account_info = json.loads(urllib2.urlopen(self.account_info, timeout=config('requestTimeout')).read()).get('data', None)
-            self.account_tanks = json.loads(urllib2.urlopen(self.account_tanks, timeout=config('requestTimeout')).read()).get('data', None)
+            self.account_info = json.loads(urllib2.urlopen(self.account_info, timeout=30).read()).get('data', None)
+            self.account_tanks = json.loads(urllib2.urlopen(self.account_tanks, timeout=30).read()).get('data', None)
         except IOError:
             showMessage('[StatsInBattle] Error loading statistics.',"red")
         return
@@ -182,6 +182,10 @@ class statistics:
         global playersInfo
         for uid in ids:
             if self.account_info[uid] and self.account_info[uid]['statistics']['all']['battles']!=0:
+                print 'playersInfo:',playersInfo
+                print self.account_info[uid]
+                if uid in playersInfo:
+                    playersInfo[uid]={}
                 playersInfo[uid]['wgr'] = self.account_info[uid]['global_rating']
                 playersInfo[uid]['battles'] = self.account_info[uid]['statistics']['all']['battles']
                 playersInfo[uid]['winrate'] = round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], config('roundWinrate')) if config('roundWinrate')!=0 else int(round(self.account_info[uid]['statistics']['all']['wins'] * 100.0 / self.account_info[uid]['statistics']['all']['battles'], 0))
@@ -246,9 +250,6 @@ class statistics:
         result['64017']=8 #leKpz M 41 90 mm
         result['56145']=6 #Sentinel AC IE2/IV
         result['19217']=10 #Grille 15
-        result['51809']=3 #Type 98 Ke-Ni Otsu
-        result['50961']=8 #leKpz M 41 90 mm GF
-        result['57121']=8 #M46 Patton KR
         self.encyclopedia_vehicles = result
         return
 
@@ -370,7 +371,7 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
     playerInfo = playersInfo.get(str(dbID), None)
     if playerInfo.get('battles') is None:
         return old_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps)
-
+    #----------- original code ------------------
     vTypeDescr = vProxy.typeDescriptor
     maxHealth = vTypeDescr.maxHealth
     mProv = vProxy.model.node('HP_gui')
@@ -382,7 +383,7 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
     markerID = self._MarkersManager__ownUI.addMarker(mProv, 'VehicleMarkerAlly' if isAlly else 'VehicleMarkerEnemy')
     self._MarkersManager__markers[vInfo.vehicleID] = _VehicleMarker(markerID, vProxy, self._MarkersManager__ownUIProxy)
     battleCtx = g_sessionProvider.getCtx()
-    result = battleCtx.getPlayerFullNameParts(vProxy.id)
+    fullName, pName, clanAbbrev, regionCode, vehShortName = battleCtx.getFullPlayerNameWithParts(vProxy.id)
     vType = vInfo.vehicleType
     squadIcon = ''
     if arena_info.isFalloutMultiTeam() and vInfo.isSquadMan():
@@ -395,14 +396,19 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
         else:
             squadTeam = 'enemy'
         squadIcon = squadIconTemplate % (squadTeam, teamIdx)
+    #----- end -------
+    clanAbbrev = ''
+    vehShortName = str(config('marker/vehicle')).format(**playerInfo)
+    pName = str(config('marker/nick')).format(**playerInfo)
+    #----------- original code ------------------
     self.invokeMarker(markerID, 'init', [vType.classTag,
      vType.iconPath,
-     str(config('marker/vehicle')).format(**playerInfo), #result.vehicleName
+     vehShortName,
      vType.level,
-     result.playerFullName,
-     str(config('marker/nick')).format(**playerInfo), #result.playerName
-     "", #clanAbbrev
-     result.regionCode,
+     fullName,
+     pName,
+     clanAbbrev,
+     regionCode,
      vProxy.health,
      maxHealth,
      guiProps.name(),
@@ -412,6 +418,7 @@ def new_MarkersManager_addVehicleMarker(self, vProxy, vInfo, guiProps):
      g_ctfManager.getVehicleCarriedFlagID(vInfo.vehicleID) is not None,
      squadIcon])
     return markerID
+    #----------- end -----------------
 
 def new_BattleEntry_onAddToIgnored(self, _, uid, userName):
     old_BattleEntry_onAddToIgnored(self, _, uid, playersInfo[str(int(uid))]['name'])
@@ -419,18 +426,45 @@ def new_BattleEntry_onAddToIgnored(self, _, uid, userName):
 def new_BattleEntry_onAddToFriends(self, _, uid, userName):
     old_BattleEntry_onAddToFriends(self, _, uid, playersInfo[str(int(uid))]['name'])
 
+def new_UserDossier__requestPlayerInfo(self, callback):
+
+    def proxyCallback(value):
+        if value is not None and len(value) > 1:
+            self._UserDossier__cache['databaseID'] = value[0]
+            self._UserDossier__cache['account'] = dossiers2.getAccountDossierDescr(value[1])
+            self._UserDossier__cache['clan'] = value[2]
+            stats.loadStats([str(self._UserDossier__cache['databaseID'])])
+            stats.getStats([str(self._UserDossier__cache['databaseID'])])
+            self._UserDossier__cache['rating'] = playersInfo.get(str(self._UserDossier__cache['databaseID']),0).get('eff',0)
+            self._UserDossier__cache['rated7x7Seasons'] = seasons = {}
+            for sID, d in (value[4] or {}).iteritems():
+                seasons[sID] = dossiers2.getRated7x7DossierDescr(d)
+
+        callback(self._UserDossier__cache['account'])
+        return
+    
+    self._UserDossier__queue.append(lambda : BigWorld.player().requestPlayerInfo(self._UserDossier__cache['databaseID'], partial(lambda c, code, databaseID, dossier, clanID, clanInfo, gRating, eSportSeasons: self._UserDossier__processValueResponse(c, code, (databaseID,
+     dossier,
+     (clanID, clanInfo),
+     gRating,
+     eSportSeasons)), proxyCallback)))
+    self._UserDossier__processQueue()
+
+
 def loadMod():
     if config('enable'):
-        global stats,ids,playersInfo,old_ArenaDataProvider_buildVehiclesData,old_ArenaDataProvider_addVehicleInfoVO,old_Battle_beforeDelete,old_BattleEntry_onAddToIgnored,old_BattleEntry_onAddToFriends
+        global stats,ids,playersInfo,old_ArenaDataProvider_buildVehiclesData,old_ArenaDataProvider_addVehicleInfoVO,old_Battle_beforeDelete,old_BattleEntry_onAddToIgnored,old_BattleEntry_onAddToFriends,old_UserDossier__requestPlayerInfo
         stats=statistics()
         ids=[]
         playersInfo={}
+        old_UserDossier__requestPlayerInfo=UserDossier._UserDossier__requestPlayerInfo
         old_Battle_beforeDelete = Battle.beforeDelete
         old_ArenaDataProvider_buildVehiclesData = ArenaDataProvider.buildVehiclesData
         old_ArenaDataProvider_addVehicleInfoVO = ArenaDataProvider._ArenaDataProvider__addVehicleInfoVO
         old_BattleEntry_onAddToIgnored = BattleEntry._BattleEntry__onAddToIgnored 
         old_BattleEntry_onAddToFriends = BattleEntry._BattleEntry__onAddToFriends
-        BattleEntry._BattleEntry__onAddToIgnored = new_BattleEntry_onAddToIgnored 
+        UserDossier._UserDossier__requestPlayerInfo = new_UserDossier__requestPlayerInfo
+        BattleEntry._BattleEntry__onAddToIgnored = new_BattleEntry_onAddToIgnored
         BattleEntry._BattleEntry__onAddToFriends = new_BattleEntry_onAddToFriends 
         Battle.beforeDelete=new_Battle_beforeDelete
         ArenaDataProvider.buildVehiclesData = new_ArenaDataProvider_buildVehiclesData
