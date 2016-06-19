@@ -228,7 +228,7 @@ class Statistics:
                             self.playersInfo[dbID]['clan'] = "[%s]" % value['clanAbbrev'] if value['clanAbbrev'] else ""
                             self.playersInfo[dbID]['nick'] = self.playersInfo[dbID]['name'] + self.playersInfo[dbID]['clan']
                             self.playersInfo[dbID]['clannb'] = value['clanAbbrev']
-                            self.playersInfo[dbID]['vehicle'] = value['vehicleType'].type.userString
+                            self.playersInfo[dbID]['vehicle'] = value['vehicleType'].type.shortUserString
                             self.playersInfo[dbID]['tank_id'] = value['vehicleType'].type.compactDescr
                             self.playersInfo[dbID]['level'] = value['vehicleType'].level
                             self.playersInfo[dbID]['type'] = tuple(value['vehicleType'].type.tags & VEHICLE_CLASS_TAGS)[0]
