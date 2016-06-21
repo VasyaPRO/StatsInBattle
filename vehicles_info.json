@@ -1,4 +1,10 @@
 {
+	"57121": {
+		"level": 8,
+		"type": "mediumTank",
+		"name": "M46 Patton KR",
+		"nation": "usa"
+	},
 	"62993": {
 		"level": 7,
 		"type": "heavyTank",
