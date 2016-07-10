@@ -307,7 +307,7 @@ class Statistics:
                 showMessage('[StatsInBattle] Error loading vehicles.', "red")
                 try:
                     file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"r")
-                    self._vehiclesInfo = file.read()
+                    self._vehiclesInfo = json.loads(file.read())
                     file.close()
                 except:
                     pass
