@@ -28,7 +28,9 @@ from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from items.vehicles import VEHICLE_CLASS_TAGS
 import nations
 from ClientArena import ClientArena
+from helpers import getClientVersion
 
+CLIENT_VERSION = getClientVersion().split(" ")[0].replace("v.","")
 __version__ = '2.0'
 __author__ = 'VasyaPRO_2014'
 
@@ -303,6 +305,17 @@ class Statistics:
                 #print "vehicles info loaded [%s sec]" % str(time.time() - startTime)
             except IOError:
                 showMessage('[StatsInBattle] Error loading vehicles.', "red")
+                try:
+                    file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"r")
+                    self._vehiclesInfo = file.read()
+                    file.close()
+                except:
+                    pass
+            else:
+                file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"w")
+                file.write(json.dumps(self._vehiclesInfo))
+                file.close()
+            
 
     def getColor(self, rating, value):
         color = "FFFFFF"
