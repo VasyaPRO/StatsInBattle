@@ -1,8 +1,8 @@
 /*
 Информация:
 	Статистика игроков в бою
-	Версия: 2.0
-	Версия клиента игры: 0.9.15.0.1
+	Версия: 2.1
+	Версия клиента игры: 0.9.15.1
 	Автор: VasyaPRO_2014
 	Спасибо Monstrofil и BirrettaMalefica (Евросервер)
 
@@ -49,79 +49,49 @@
 	"applicationID": "demo",
 	//Тайм-аут запросов в api.
 	"requestTimeout": 5,
-	//Разрешить сбор данных об использовании мода. Это поможет эффективнее бороться с отсутствием танков в WG API, что в свою очередь увеличит точность расчётов EFF, WN7 и WN6.
-	//Также знание количества пользователей мода будет стимулировать автора не забрасывать разработку, особенно если это количество невероятно огромно ;)
-	//Убедительная просьба: не выключайте данную функцию, при выкладывании конфига/мода в общий доступ, спасибо.
-	"allowAnalytics": true,
+    //Разрешить сбор данных об использовании мода. Это поможет эффективнее бороться с отсутствием танков в WG API, что в свою очередь увеличит точность расчётов EFF, WN7 и WN6.
+    //Также знание количества пользователей мода будет стимулировать автора не забрасывать разработку, особенно если это количество невероятно огромно ;)
+    //Убедительная просьба: не выключайте данную функцию, при выкладывании конфига/мода в общий доступ, спасибо.
+    "allowAnalytics": true,
 	//Панель игроков ("уши" команд)
 	//Во всех режимах left - формат для левой панели (союзники), rigth - для правой (враги)
 	"playersPanel":{
 		//Включить модуль playersPanel
 		"enable":true,
-		//Формат отображения для режима large (Большие уши)
-		"large": {
-			//Формат отображения для никнейма игрока
-			"nick": {
-				"left": "<font color='#{colorBattles}'>{kb}</font> <font color='#{default_color}'>{nick}</font><br/>",
-				"right": "<font color='#{default_color}'>{nick}</font> <font color='#{colorBattles}'>{kb}</font><br/>"
-			},
-			//Формат отображения для названия техники
-			"vehicle": {
-				"left": "<font color='#{colorEFF}'>{eff}</font> <font color='#{colorWinrate}'>{winrate}%</font><br/>",
-				"right": "<font color='#{colorWinrate}'>{winrate}%</font> <font color='#{colorEFF}'>{eff}</font><br/>"
-			}
-		},
-		//Формат отображения для режима medium2 (Средние уши, где только название танка)
-		"medium2": {
-			"left": "<font color='#{colorEFF}'>{eff}</font> <font color='#{colorWinrate}'>{winrate}%</font><br/>",
-			"right": "<font color='#{colorWinrate}'>{winrate}%</font> <font color='#{colorEFF}'>{eff}</font><br/>"
-		},
-		//Формат отображения для режима medium (Средние уши, где только никнейм игрока)
-		"medium": {
-			"left": "<font color='#{colorEFF}'>{nick}</font><br/>",
-			"right": "<font color='#{colorEFF}'>{nick}</font><br/>"
-		}
+        //Текстовое поле с никнеймом игрока в больших (large) ушах
+        "playerNameFull": {
+            "left": "<font color='#{colorEFF}'>{nick}</font>",
+			"right": "<font color='#{colorEFF}'>{nick}</font>"
+        },
+        //Текстовое поле с никнеймом игрока в средних (medium) ушах
+        "playerNameCut": {
+            "left": "<font color='#{colorBattles}'>{kb}</font> {nick}",
+			"right": "{nick} <font color='#{colorBattles}'>{kb}</font>",
+            "width": 100
+        },
+        //Текстовое поле с названием танка в больших (large) и вторых средних (medium2) ушах
+        "vehicleName": {
+            "left": "<font color='#{colorEFF}'>{vehicle}</font>",
+			"right": "<font color='#{colorEFF}'>{vehicle}</font>",
+            "width": 80
+        }
 	},
-	//Формат отображения статистики по нажатию таб
-	//Отображение цветов не работает. Надеюсь временно:)
+	//Панель статистики по нажатию таб
 	"tab": {
 		//Включить модуль tab
 		"enable": true,
-		//Формат отображения никнейма
-		"nick": {
-			"left": "<img src='{flag_url}' width='16' height='12'> {nick}</br>",
-			"right": "{nick} <img src='{flag_url}' width='16' height='12'></br>"
+		//Текстовое поле с никнеймом игрока
+		"playerName": {
+			"left": "<font size='12' face='Consolas'>{spg_percent:<5.2f}</font> <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
+			"right": "<font color='#{colorEFF}'>{name:.16}</font> <img src='{flag_url}' width='16' height='12'><font size='12' face='Consolas'>{spg_percent:5.2f}</font>",
+            "width": 180
 		},
-		//Формат отображения названия техники
-		"vehicle": {
-			"left": "{kb} {winrate}% {eff} {vehicle}",
-			"right": "{vehicle} {eff} {winrate}% {kb}"
+		//Текстовое поле с названием танка
+		"vehicleName": {
+			"left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
+			"right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>",
+            "width": 100
 		}
-	},
-	//Формат отображения статистики в окне загрузки в бой
-	//Отображение цветов тоже не работает.
-	"battleLoading": {
-		//Включить модуль battleLoading
-		"enable": true,
-		//Формат отображения никнейма
-		"nick": {
-			"left": "<img src='{flag_url}' width='16' height='12'> {nick}",
-			"right": "{nick} <img src='{flag_url}' width='16' height='12'>"
-		},
-		//Формат отображения названия техники
-		"vehicle": {
-			"left": "{kb} {winrate}% {eff}",
-			"right": "{eff} {winrate}% {kb}"
-		}
-	},
-	//Формат отображения статистики в маркерах над техникой
-	"marker": {
-		//Включить модуль marker
-		"enable": true,
-		//Формат отображения никнейма
-		"nick": "{winrate}% {nick}",
-		//Формат отображения названия техники
-		"vehicle": "{eff} {vehicle} {kb}"
 	},
 	//Настройка цветов
 	//Внимание, количество елементов во всех списках должно совпадать!
@@ -132,10 +102,10 @@
 		"colorEFF": [1, 615, 870, 1175, 1525, 1850],
 		//Соответствуещие цветовые критерии для рейтинга WGR (ЛРИ)
 		"colorWGR": [1, 2495, 4345, 6425, 8625, 10040],
-		//Соответствуещие цветовые критерии для рейтинга WN7
-		"colorWN7": [1, 495, 860, 1220, 1620, 1965],
-		//Соответствуещие цветовые критерии для рейтинга WN6
-		"colorWN6": [1, 460, 850, 1215, 1620, 1960],
+        //Соответствуещие цветовые критерии для рейтинга WN7
+        "colorWN7": [1, 495, 860, 1220, 1620, 1965],
+        //Соответствуещие цветовые критерии для рейтинга WN6
+        "colorWN6": [1, 460, 850, 1215, 1620, 1960],
 		//Соответствуещие цветовые критерии для процента побед
 		"colorWinrate": [1, 47, 49, 52.5, 58, 65],
 		//Соответствуещие цветовые критерии для количества боев
