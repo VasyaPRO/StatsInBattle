@@ -43,7 +43,7 @@ from gui.battle_control.arena_info import vos_collections
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.vehicle import VehicleInfoComponent
 
 
-CLIENT_VERSION = getClientVersion().split(" ")[0].replace("v.","")
+CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
 __version__ = '2.1 test #1'
 __author__ = 'VasyaPRO_2014'
 
@@ -56,7 +56,7 @@ class Config:
         return
 
     def __call__(self, path):
-        path = path.split("/")
+        path = path.split('/')
         c = self.config
         for x in path:
             c = c[x]
@@ -67,10 +67,10 @@ class Config:
             file = open('res_mods/configs/StatsInBattle/StatsInBattle.json', 'r')
             f = file.read()
             # Delete comments
-            while f.count("/*"):
-                f = f.replace(f[f.find("/*"):f.find("*/") + 2 if f.find("*/") + 2 != 1 else len(f)], "")
-            while f.count("//"):
-                f = f.replace(f[f.find("//"):f.find("\n", f.find("//")) if f.find("\n", f.find("//")) != -1 else len(f)], "")
+            while f.count('/*'):
+                f = f.replace(f[f.find('/*'):f.find('*/') + 2 if f.find('*/') + 2 != 1 else len(f)], '')
+            while f.count('//'):
+                f = f.replace(f[f.find('//'):f.find('\n', f.find('//')) if f.find('\n', f.find('//')) != -1 else len(f)], '')
             cfg = json.loads(f)
             # Check on valid
             cfg['reloadKey']
@@ -137,7 +137,7 @@ class Config:
         addStats()
 
     def loadDefault(self):
-        showMessage('[StatsInBattle] Loading default config.', "green")
+        showMessage('[StatsInBattle] Loading default config.', 'green')
         self.config = {
             'reloadKey': 'KEY_F9',
             'region': 'ru',
@@ -147,31 +147,31 @@ class Config:
             'playersPanel': {
                 'enable':True,
                 'playerNameFull': {
-                    'left': "<font color='#{colorBattles}'>{kb}</font> {nick}",
-                    'right': "{nick} <font color='#{colorBattles}'>{kb}</font>"
+                    'left': '<font color="#{colorBattles}">{kb}</font> {nick}',
+                    'right': '{nick} <font color="#{colorBattles}">{kb}</font>'
                     #'width' : 150
                 },
                 'playerNameCut': {
-                    'left': "<font color='#{colorBattles}'>{kb}</font> {nick}",
-                    'right': "{nick} <font color='#{colorBattles}'>{kb}</font>",
+                    'left': '<font color="#{colorBattles}">{kb}</font> {nick}',
+                    'right': '{nick} <font color="#{colorBattles}">{kb}</font>',
                     'width': 44
                 },
                 'vehicleName': {
-                    'left': "<font color='#{colorBattles}'>{kb}</font> {nick}",
-                    'right': "{nick} <font color='#{colorBattles}'>{kb}</font>",
+                    'left': '<font color="#{colorBattles}">{kb}</font> {nick}',
+                    'right': '{nick} <font color="#{colorBattles}">{kb}</font>',
                     'width': 100
                 }
             },
             'tab': {
                 'enable': True,
                 'playerName': {
-                    'left': "<font size='12' face='Consolas'>{spg_percent:7.3f}</font> <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
-                    'right': "<font color='#{colorEFF}'>{name}</font> <img src='{flag_url}' width='16' height='12'>{spg_percent:0.3f}",
+                    'left': '<font size=12 face="Consolas">{spg_percent:7.3f}</font> <img src="{flag_url}" width=16 height=12> <font color="#{colorEFF}">{name}</font>',
+                    'right': '<font color="#{colorEFF}">{name}</font> <img src="{flag_url}" width=16 height=12>{spg_percent:0.3f}',
                     'width': 20
                 },
                 'vehicleName': {
-                    'left': "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
-                    'right': "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>",
+                    'left': '<font face="Consolas"><font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font></font>',
+                    'right': '<font face="Consolas"><font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font></font>',
                     'width': 20
                 }
             },
@@ -209,18 +209,18 @@ class Statistics:
                     self._account_info = json.loads(urllib2.urlopen(account_info, timeout=config('requestTimeout')).read()).get('data', None)
                     self._account_tanks = json.loads(urllib2.urlopen(account_tanks, timeout=config('requestTimeout')).read()).get('data', None)
                 except IOError:
-                    showMessage('[StatsInBattle] Error loading statistics.', "red")
+                    showMessage('[StatsInBattle] Error loading statistics.', 'red')
                     self._account_info = None
                     self._account_tanks = None
                 else:
-                    #print "Statistics successfully loaded [%s sec]" % str(time.time()-startTime)
+                    #print 'Statistics successfully loaded [%s sec]' % str(time.time()-startTime)
                     for value in arena.vehicles.values():
                         dbID = str(value['accountDBID'])
                         if self._account_info[dbID] and self._account_info[dbID]['statistics']['all']['battles'] != 0:
                             self.playersInfo[dbID] = {}
                             self.playersInfo[dbID]['team'] = value['team']
                             self.playersInfo[dbID]['name'] = value['name']
-                            self.playersInfo[dbID]['clan'] = "[%s]" % value['clanAbbrev'] if value['clanAbbrev'] else ""
+                            self.playersInfo[dbID]['clan'] = '[%s]' % value['clanAbbrev'] if value['clanAbbrev'] else ''
                             self.playersInfo[dbID]['nick'] = self.playersInfo[dbID]['name'] + self.playersInfo[dbID]['clan']
                             self.playersInfo[dbID]['clannb'] = value['clanAbbrev']
                             self.playersInfo[dbID]['vehicle'] = value['vehicleType'].type.shortUserString
@@ -250,13 +250,13 @@ class Statistics:
                                 for tank in self._account_tanks[dbID]:
                                     if str(tank['tank_id']) in self._vehiclesInfo:
                                         player_tier_temp += self._vehiclesInfo[str(tank['tank_id'])]['level'] * tank['statistics']['battles']
-                                        if self._vehiclesInfo[str(tank['tank_id'])]['type'] == "SPG":
+                                        if self._vehiclesInfo[str(tank['tank_id'])]['type'] == 'SPG':
                                             self.playersInfo[dbID]['spg_battles'] += tank['statistics']['battles']
                                     else:
-                                        description = "ERROR: unknown tank_id %s in player %s" % (tank['tank_id'], dbID)
+                                        description = 'ERROR: unknown tank_id %s in player %s' % (tank['tank_id'], dbID)
                                         if self.playersInfo[dbID]['tank_id'] == tank['tank_id']:
                                             player_tier_temp += self.playersInfo[dbID]['level'] * tank['statistics']['battles']
-                                            description += " (%s, level %d, type %s, nation %s)" % (self.playersInfo[dbID]['vehicle'], self.playersInfo[dbID]['level'], self.playersInfo[dbID]['type'], self.playersInfo[dbID]['nation'])
+                                            description += ' (%s, level %d, type %s, nation %s)' % (self.playersInfo[dbID]['vehicle'], self.playersInfo[dbID]['level'], self.playersInfo[dbID]['type'], self.playersInfo[dbID]['nation'])
                                         ga.send_exception(description)
                                 avgTier = float(player_tier_temp) / self._account_info[dbID]['statistics']['all']['battles']
                                 self.playersInfo[dbID]['eff'] = self.getEFF(avgDmg, avgTier, avgFrags, avgSpot, avgCap, avgDef)
@@ -295,34 +295,34 @@ class Statistics:
             url = 'https://raw.githubusercontent.com/VasyaPRO/StatsInBattle/master/vehicles_info.json'
             try:
                 self._vehiclesInfo = json.load(urllib2.urlopen(url))
-                #print "vehicles info loaded [%s sec]" % str(time.time() - startTime)
+                #print 'vehicles info loaded [%s sec]' % str(time.time() - startTime)
             except IOError:
-                showMessage('[StatsInBattle] Error loading vehicles.', "red")
+                showMessage('[StatsInBattle] Error loading vehicles.', 'red')
                 try:
-                    file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"r")
-                    self._vehiclesInfo = json.loads(file.read())
+                    file = open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'r')
+                    self._vehiclesInfo = json.load(file)
                     file.close()
                 except:
                     pass
             else:
-                file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"w")
-                file.write(json.dumps(self._vehiclesInfo))  
-                file.close()  
+                file = open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'w')
+                json.dump(self._vehiclesInfo, file)
+                file.close()
 
 
     def getColor(self, rating, value):
-        color = "FFFFFF"
+        color = 'FFFFFF'
         for i in range(len(config('colors/colorCodes'))):
             if value >= config('colors')[rating][i]:
                 color = config('colors/colorCodes')[i]
         return color
     
-    def getAccountDBIDByPlayerName(self,playerName):
+    def getAccountDBIDByPlayerName(self, playerName):
         for id,value in self.playersInfo.items():
             if value['name'].startswith(playerName):
                 return id
-        #print playerName, "not in playersInfo"
-        #raise Exception("getAccountDBID Error")
+        #print playerName, 'not in playersInfo'
+        #raise Exception('getAccountDBID Error')
 
 
 class Analytics(object):
@@ -335,12 +335,12 @@ class Analytics(object):
 
     def getPlayerDBID(self):
         player = BigWorld.player()
-        if hasattr(player,"databaseID"):
+        if hasattr(player, 'databaseID'):
             return player.databaseID
-        elif hasattr(player,"playerVehicleID"):
+        elif hasattr(player, 'playerVehicleID'):
             return player.arena.vehicles[player.playerVehicleID]['accountDBID']
         else:
-            #print "fail :D"
+            #print 'fail :D'
             time.sleep(5)
             return self.getPlayerDBID()
 
@@ -357,7 +357,7 @@ class Analytics(object):
                 'av': '%s' % self.appVersion,
                 'cd': '%s [%s]' % (player.name, AUTH_REALM)
                 })
-            return urllib2.urlopen(url='http://www.google-analytics.com/collect?', data=param).read()
+            urllib2.urlopen(url='http://www.google-analytics.com/collect?', data=param)
 
     def send_screenview(self):
         if not self.started:
@@ -377,25 +377,31 @@ class Analytics(object):
                 'cd': '%s [%s]' % (player.name, AUTH_REALM),
                 'exd': '%s' % description
                 })
-            return urllib2.urlopen(url='http://www.google-analytics.com/collect?', data=param).read()
+            urllib2.urlopen(url='http://www.google-analytics.com/collect?', data=param)
 
     def send_exception(self,description):
         self._thread_analytics = threading.Thread(target=self.exception, args=[description])
         self._thread_analytics.start()
 
 
-def parse(string):
-    try:
-        return (re.match("<font color='#(.*?)'>(.*?)</font>", string).group(1), re.match("<font color='#(.*?)'>(.*?)</font>", string).group(2))
-    except:
-        return ('', '')
+# def parse(string):
+#     try:
+#         return (re.match('<font color="#(.*?)">(.*?)</font>', string).group(1), re.match('<font color="#(.*?)">(.*?)</font>', string).group(2))
+#     except:
+#         return ('', '')
 
 
 def showMessage(text, color='green'):
     app = g_appLoader.getDefBattleApp()
     if app is not None:
-        battle_page = app.containerManager.getContainer(ViewTypes.VIEW).getView() 
-        battle_page.components['battleVehicleMessages'].as_showGreenMessageS(None, text)
+        battle_page = app.containerManager.getContainer(ViewTypes.VIEW).getView()
+        if color == 'green':
+            battle_page.components['battleVehicleMessages'].as_showGreenMessageS(None, text)
+        elif color == 'red':
+            battle_page.components['battleVehicleMessages'].as_showRedMessageS(None, text)
+        else:
+            battle_page.components['battleVehicleMessages'].as_showPurpleMessageS(None, text)
+            # as_showGoldMessageS, as_showSelfMessageS
     elif isinstance(BigWorld.player(), PlayerAccount):
         SystemMessages.pushMessage(text, type = SystemMessages.SM_TYPE.Warning)
     else:
@@ -405,7 +411,7 @@ def handleKeyEvent(event):
     is_down, key, mods, is_repeat = game.convertKeyEvent(event)
     if key is getattr(Keys, config('reloadKey'), 0) and is_down:
         config.reload()
-    #if key is getattr(Keys, "KEY_P") and is_down: # Debug
+    #if key is getattr(Keys, 'KEY_P') and is_down: # Debug
         #print stats.playersInfo
 
 InputHandler.g_instance.onKeyDown += handleKeyEvent
@@ -414,7 +420,7 @@ InputHandler.g_instance.onKeyUp += handleKeyEvent
 
 def new_Hangar__updateAll(self):
     old_Hangar__updateAll(self)
-    #print "debug: Hangar.__updateAll"
+    #print 'debug: Hangar.__updateAll'
     ga.send_screenview()
 
 old_Hangar__updateAll = Hangar._Hangar__updateAll
@@ -423,19 +429,23 @@ Hangar._Hangar__updateAll = new_Hangar__updateAll
 
 def new__onVehicleListUpdate(self, argStr):
     old__onVehicleListUpdate(self, argStr)
-    #print "onVehicleListUpdate"
+    #print 'onVehicleListUpdate'
     stats.loadStats()
+
 
 old__onVehicleListUpdate = ClientArena._ClientArena__onVehicleListUpdate
 ClientArena._ClientArena__onVehicleListUpdate = new__onVehicleListUpdate
 
 
 def addStats():
-    playersPanel = g_appLoader.getDefBattleApp().containerManager.getContainer(ViewTypes.VIEW).getView().components['playersPanel']
+    app = g_appLoader.getDefBattleApp()
+    if app is None:
+        return
+    playersPanel = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['playersPanel']
     for i in range(playersPanel.flashObject.listLeft._items.length):
         item = playersPanel.flashObject.listLeft.getItemsByIndex(i)
         accountDBID = item.accountDBID
-        playerInfo = stats.playersInfo.get(str(int(accountDBID)),None)
+        playerInfo = stats.playersInfo.get(str(int(accountDBID)), None)
         #item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
         item.listItem.playerNameCutTF.width = config('playersPanel/playerNameCut/width')
         item.listItem.vehicleTF.width = config('playersPanel/vehicleName/width')
@@ -455,30 +465,30 @@ def addStats():
             item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/right').format(**playerInfo)
             item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/right').format(**playerInfo)
 
-    fullStats = g_appLoader.getDefBattleApp().containerManager.getContainer(ViewTypes.VIEW).getView().components['fullStats']
-    for i in range(1,16):
-        playerNameTF = getattr(fullStats.flashObject.statsTable,"playerName_c1r%d" % i)
-        vehicleNameTF = getattr(fullStats.flashObject.statsTable,"vehicleName_c1r%d" % i)
+    fullStats = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['fullStats']
+    for i in range(1, 16):
+        playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c1r%d' % i)
+        vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c1r%d' % i)
         playerNameTF.width = config('tab/playerName/width')
         vehicleNameTF.width = config('tab/vehicleName/width')
-        playerName = playerNameTF.text.split("[")[0].split("..")[0]
+        playerName = playerNameTF.text.split('[')[0].split('..')[0]
         accountDBID = stats.getAccountDBIDByPlayerName(playerName)
         playerInfo = stats.playersInfo.get(accountDBID,None)
         if playerInfo is not None:
             playerNameTF.htmlText = config('tab/playerName/left').format(**playerInfo)
             vehicleNameTF.htmlText = config('tab/vehicleName/left').format(**playerInfo)
     for i in range(1,16):
-        playerNameTF = getattr(fullStats.flashObject.statsTable,"playerName_c2r%d" % i)
-        vehicleNameTF = getattr(fullStats.flashObject.statsTable,"vehicleName_c2r%d" % i)
+        playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c2r%d' % i)
+        vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c2r%d' % i)
         playerNameTF.width = config('tab/playerName/width')
         vehicleNameTF.width = config('tab/vehicleName/width')
-        playerName = playerNameTF.text.split("[")[0].split("..")[0]
+        playerName = playerNameTF.text.split('[')[0].split('..')[0]
         accountDBID = stats.getAccountDBIDByPlayerName(playerName)
         playerInfo = stats.playersInfo.get(accountDBID,None)
         if playerInfo is not None:
             playerNameTF.htmlText = config('tab/playerName/right').format(**playerInfo)
             vehicleNameTF.htmlText = config('tab/vehicleName/right').format(**playerInfo)
-        #print #getattr(fullStats.flashObject.statsTable,"playerName_c1r%d"%i).text.split("[")[0]
+        #print #getattr(fullStats.flashObject.statsTable, 'playerName_c1r%d' % i).text.split('[')[0]
 
 
 def new_BattleEntry_beforeDelete(self):
@@ -489,8 +499,8 @@ old_BattleEntry_beforeDelete = BattleEntry.beforeDelete
 BattleEntry.beforeDelete=new_BattleEntry_beforeDelete
 
 def new_addVehicleInfo(self, vInfoVO, overrides):
-    BigWorld.callback(2.0,addStats)
-    #print "addVehicleInfo"
+    BigWorld.callback(2.0, addStats)
+    #print 'addVehicleInfo'
     return old_addVehicleInfo(self, vInfoVO, overrides)
 
 
