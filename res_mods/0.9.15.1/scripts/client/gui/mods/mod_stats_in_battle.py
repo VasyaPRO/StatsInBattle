@@ -2,7 +2,15 @@ import BigWorld
 import game
 import Keys
 
-import json, urllib, urllib2, math, os, re, threading, time
+import json
+import urllib
+import urllib2
+import math
+import os
+import re
+import threading
+import time
+import nations
 
 from Avatar import PlayerAvatar
 from Account import PlayerAccount
@@ -26,17 +34,16 @@ from CTFManager import g_ctfManager
 from constants import AUTH_REALM
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from items.vehicles import VEHICLE_CLASS_TAGS
-import nations
 from ClientArena import ClientArena
 from gui.Scaleform.framework import ViewTypes
 from PlayerEvents import g_playerEvents
-from helpers import getClientVersion 
+from helpers import getClientVersion
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.stats_ctrl import BattleStatisticsDataController
 from gui.battle_control.arena_info import vos_collections
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.vehicle import VehicleInfoComponent
 
 
-CLIENT_VERSION = getClientVersion().split(" ")[0].replace("v.","") 
+CLIENT_VERSION = getClientVersion().split(" ")[0].replace("v.","")
 __version__ = '2.1 test #1'
 __author__ = 'VasyaPRO_2014'
 
@@ -109,16 +116,16 @@ class Config:
         finally:
             file.close()
         return
-    
+
     def reload(self):
         self.load()
-        
+
         arena = BigWorld.player().arena
         if arena is not None:
             ids = [str(pl['accountDBID']) for pl in arena.vehicles.values()]
             if ids != stats.dbIDs: # It is possible only on global map
                 stats.loadStats()
-        
+
         '''
         # Redraw players panel and tab
         battle = g_appLoader.getDefBattleApp()
@@ -178,7 +185,6 @@ class Config:
                 'colorBattles': [1, 2000, 6000, 16000, 30000, 43000]
             }
         }
-        return
 
 
 class Statistics:
@@ -288,18 +294,18 @@ class Statistics:
             #startTime = time.time()
             url = 'https://raw.githubusercontent.com/VasyaPRO/StatsInBattle/master/vehicles_info.json'
             try:
-                self._vehiclesInfo = json.loads(urllib2.urlopen(url).read())
+                self._vehiclesInfo = json.load(urllib2.urlopen(url))
                 #print "vehicles info loaded [%s sec]" % str(time.time() - startTime)
             except IOError:
                 showMessage('[StatsInBattle] Error loading vehicles.', "red")
-                try:  
-                    file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"r")  
-                    self._vehiclesInfo = json.loads(file.read()) 
-                    file.close()  
-                except:  
-                    pass  
-            else:  
-                file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"w")  
+                try:
+                    file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"r")
+                    self._vehiclesInfo = json.loads(file.read())
+                    file.close()
+                except:
+                    pass
+            else:
+                file = open("res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json" % CLIENT_VERSION,"w")
                 file.write(json.dumps(self._vehiclesInfo))  
                 file.close()  
 
@@ -321,7 +327,7 @@ class Statistics:
 
 class Analytics(object):
     def __init__(self):
-        self._thread_analytics = None 
+        self._thread_analytics = None
         self.trackingID = 'UA-78494860-1'
         self.appName = 'StatsInBattle'
         self.appVersion = __version__
@@ -386,9 +392,11 @@ def parse(string):
 
 
 def showMessage(text, color='green'):
-    #if g_appLoader.getDefBattleApp() is not None:
-        #g_appLoader.getDefBattleApp().call('battle.PlayerMessagesPanel.ShowMessage', [0, text, color])
-    if isinstance(BigWorld.player(), PlayerAccount):
+    app = g_appLoader.getDefBattleApp()
+    if app is not None:
+        battle_page = app.containerManager.getContainer(ViewTypes.VIEW).getView() 
+        battle_page.components['battleVehicleMessages'].as_showGreenMessageS(None, text)
+    elif isinstance(BigWorld.player(), PlayerAccount):
         SystemMessages.pushMessage(text, type = SystemMessages.SM_TYPE.Warning)
     else:
         print text
@@ -417,7 +425,7 @@ def new__onVehicleListUpdate(self, argStr):
     old__onVehicleListUpdate(self, argStr)
     #print "onVehicleListUpdate"
     stats.loadStats()
-    
+
 old__onVehicleListUpdate = ClientArena._ClientArena__onVehicleListUpdate
 ClientArena._ClientArena__onVehicleListUpdate = new__onVehicleListUpdate
 
@@ -484,7 +492,7 @@ def new_addVehicleInfo(self, vInfoVO, overrides):
     BigWorld.callback(2.0,addStats)
     #print "addVehicleInfo"
     return old_addVehicleInfo(self, vInfoVO, overrides)
-    
+
 
 old_addVehicleInfo = VehicleInfoComponent.addVehicleInfo
 VehicleInfoComponent.addVehicleInfo = new_addVehicleInfo
@@ -495,8 +503,8 @@ VehicleInfoComponent.addVehicleInfo = new_addVehicleInfo
 def new_BattleEntry_onAddToIgnored(self, _, uid, userName):
     old_BattleEntry_onAddToIgnored(self, _, uid, stats.playersInfo[str(int(uid))]['name'])
 
-old_BattleEntry_onAddToIgnored = BattleEntry._BattleEntry__onAddToIgnored 
-BattleEntry._BattleEntry__onAddToIgnored = new_BattleEntry_onAddToIgnored 
+old_BattleEntry_onAddToIgnored = BattleEntry._BattleEntry__onAddToIgnored
+BattleEntry._BattleEntry__onAddToIgnored = new_BattleEntry_onAddToIgnored
 
 
 def new_BattleEntry_onAddToFriends(self, _, uid, userName):

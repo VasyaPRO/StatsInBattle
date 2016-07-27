@@ -1,76 +1,76 @@
 {
-    "57089": {
+	"57089": {
 		"level": 7,
 		"type": "mediumTank",
 		"name": "Т-44-85",
 		"nation": "ussr"
 	},
-    "51809": {
+	"51809": {
 		"level": 3,
 		"type": "lightTank",
 		"name": "Type 98 Ke-Ni Otsu",
 		"nation": "japan"
 	},
-    "64017": {
+	"64017": {
 		"level": 8,
 		"type": "lightTank",
 		"name": "leKpz M 41 90 mm",
 		"nation": "germany"
 	},
-    "63537": {
-        "level": 10,
+	"63537": {
+		"level": 10,
 		"type": "mediumTank",
 		"name": "121B",
 		"nation": "china"
-    },
-    "63233": {
-        "level": 8,
+	},
+	"63233": {
+		"level": 8,
 		"type": "heavyTank",
 		"name": "КВ-4 Креславского",
 		"nation": "ussr"
-    },
-    "62721": {
-        "level": 8,
+	},
+	"62721": {
+		"level": 8,
 		"type": "heavyTank",
 		"name": "Кировец-1",
 		"nation": "ussr"
-    },
-    "62225": {
-        "level": 7,
+	},
+	"62225": {
+		"level": 7,
 		"type": "heavyTank",
 		"name": "VK 45.02 (P) Ausf. B7",
 		"nation": "germany"
-    },
-    "57633": {
-        "level": 7,
+	},
+	"57633": {
+		"level": 7,
 		"type": "lightTank",
 		"name": "T71 CMCD",
 		"nation": "usa"
-    },
-    "57377": {
-        "level": 8,
+	},
+	"57377": {
+		"level": 8,
 		"type": "mediumTank",
 		"name": "T25 Pilot Number 1",
 		"nation": "usa"
-    },
-    "50945": {
-        "level": 2,
+	},
+	"50945": {
+		"level": 2,
 		"type": "lightTank",
 		"name": "Т-45",
 		"nation": "ussr"
-    },
-    "58625": {
-        "level": 8,
+	},
+	"58625": {
+		"level": 8,
 		"type": "AT-SPG",
 		"name": "ИСУ-130",
 		"nation": "ussr"
-    },
-    "50689": {
-    	"level": 10,
+	},
+	"50689": {
+		"level": 10,
 		"type": "AT-SPG",
 		"name": "Объект 268 Вариант 5",
 		"nation": "ussr"
-    },
+	},
 	"57121": {
 		"level": 8,
 		"type": "mediumTank",

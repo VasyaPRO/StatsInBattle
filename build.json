@@ -4,7 +4,7 @@
 	"files":
 	[
 		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle.py",
-        "res_mods\\{VersionWOT}\\gui\\flash\\battle.swf",
+		"res_mods\\{VersionWOT}\\gui\\flash\\battle.swf",
 		"res_mods\\configs\\StatsInBattle\\StatsInBattle.json",
 		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle\\flags\\*"
 	]
