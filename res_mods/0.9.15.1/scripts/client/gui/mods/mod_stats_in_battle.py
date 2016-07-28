@@ -17,20 +17,16 @@ from Account import PlayerAccount
 from gui import SystemMessages
 from gui import InputHandler
 from gui.app_loader import g_appLoader
-#from gui.battle_control.arena_info import getArenaBonusType
 from account_helpers.settings_core.SettingsCore import g_settingsCore
 from gui.Scaleform.daapi.view.battle.legacy.stats_form import _StatsForm
 from gui.battle_control.battle_arena_ctrl import BattleArenaController
-#from gui.battle_control.arena_info.ArenaDataProvider import ArenaDataProvider
 from gui.Scaleform.battle_entry import BattleEntry
 from gui.Scaleform.daapi.view.battle_loading import BattleLoading
 from gui.Scaleform.daapi.view.battle.legacy.markers import _VehicleMarker, MarkersManager
 from gui import GUI_SETTINGS
-#from gui.Scaleform import VoiceChatInterface
 from gui.battle_control.arena_info.arena_vos import VehicleActions
 from gui.battle_control import g_sessionProvider, arena_info
 from CTFManager import g_ctfManager
-#from messenger.gui.Scaleform.BattleEntry import BattleEntry
 from constants import AUTH_REALM
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from items.vehicles import VEHICLE_CLASS_TAGS
@@ -41,10 +37,11 @@ from helpers import getClientVersion
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.stats_ctrl import BattleStatisticsDataController
 from gui.battle_control.arena_info import vos_collections
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.vehicle import VehicleInfoComponent
+from gui.Scaleform.daapi.view.battle_loading import BattleLoading
 
 
 CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
-__version__ = '2.1 test #1'
+__version__ = '2.1 test #2'
 __author__ = 'VasyaPRO_2014'
 
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
@@ -95,6 +92,11 @@ class Config:
             cfg['tab']['vehicleName']['left']
             cfg['tab']['vehicleName']['right']
             cfg['tab']['vehicleName']['width']
+            cfg['battleLoading']['enable']
+            cfg['battleLoading']['playerName']['left']
+            cfg['battleLoading']['playerName']['right']
+            cfg['battleLoading']['vehicleName']['left']
+            cfg['battleLoading']['vehicleName']['right']
             cfg['colors']['colorCodes']
             cfg['colors']['colorEFF']
             cfg['colors']['colorWGR']
@@ -126,14 +128,6 @@ class Config:
             if ids != stats.dbIDs: # It is possible only on global map
                 stats.loadStats()
 
-        '''
-        # Redraw players panel and tab
-        battle = g_appLoader.getDefBattleApp()
-        if battle is not None:
-            arenaDP = g_sessionProvider.getCtx().getArenaDP()
-            for isEnemy, teamIdx in arenaDP.getTeamIDsIterator():
-                battle._Battle__arenaCtrl._updateTeamData(isEnemy, teamIdx, arenaDP, False)
-        '''
         addStats()
 
     def loadDefault(self):
@@ -147,33 +141,44 @@ class Config:
             'playersPanel': {
                 'enable':True,
                 'playerNameFull': {
-                    'left': '<font color="#{colorBattles}">{kb}</font> {nick}',
-                    'right': '{nick} <font color="#{colorBattles}">{kb}</font>'
+                    "left": '<font size="12" face="Consolas" color="#{colorBattles}">{kb:<3}</font> {nick}',
+                    "right": '{nick:.10} <font size="12" face="Consolas" color="#{colorBattles}">{kb:>3}</font>',
                     #'width' : 150
                 },
                 'playerNameCut': {
-                    'left': '<font color="#{colorBattles}">{kb}</font> {nick}',
-                    'right': '{nick} <font color="#{colorBattles}">{kb}</font>',
+                    "left": '<font size="12" face="Consolas" color="#{colorBattles}">{kb:<3}</font> {nick:.16}',
+                    "right": '{nick:.16} <font size="12" face="Consolas" color="#{colorBattles}">{kb:>3}</font>',
                     'width': 44
                 },
                 'vehicleName': {
-                    'left': '<font color="#{colorBattles}">{kb}</font> {nick}',
-                    'right': '{nick} <font color="#{colorBattles}">{kb}</font>',
+                    'left': '{vehicle}',
+                    'right': '{vehicle',
                     'width': 100
                 }
             },
             'tab': {
                 'enable': True,
                 'playerName': {
-                    'left': '<font size=12 face="Consolas">{spg_percent:7.3f}</font> <img src="{flag_url}" width=16 height=12> <font color="#{colorEFF}">{name}</font>',
-                    'right': '<font color="#{colorEFF}">{name}</font> <img src="{flag_url}" width=16 height=12>{spg_percent:0.3f}',
-                    'width': 20
+                    'left': '<font size="12" face="Consolas">{spg_percent:<5.2f}</font> <img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{name}</font>',
+                    'right': '<font color="#{colorEFF}">{name:.16}</font> <img src="{flag_url}" width="16" height="12"><font size="12" face="Consolas">{spg_percent:5.2f}</font>',
+                    'width': 180
                 },
                 'vehicleName': {
                     'left': '<font face="Consolas"><font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font></font>',
                     'right': '<font face="Consolas"><font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font></font>',
-                    'width': 20
+                    'width': 100
                 }
+            },
+            'battleLoading': {
+                'enable': True,
+                'playerName': {
+                    'left': '<img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{name}</font>',
+                    'right': '<font color="#{colorEFF}">{name:.16}</font> <img src="{flag_url}" width="16" height="12">'
+                },
+                'vehicleName': {
+                    'left': '<font face="Consolas"><font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font></font>',
+                    'right': '<font face="Consolas"><font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font></font>'
+                },
             },
             'colors': {
                 'colorCodes': ['FE0E00', 'FE7903', 'F8F400', '60FF00', '02C9B3', 'D042F3'],
@@ -321,8 +326,6 @@ class Statistics:
         for id,value in self.playersInfo.items():
             if value['name'].startswith(playerName):
                 return id
-        #print playerName, 'not in playersInfo'
-        #raise Exception('getAccountDBID Error')
 
 
 class Analytics(object):
@@ -384,13 +387,6 @@ class Analytics(object):
         self._thread_analytics.start()
 
 
-# def parse(string):
-#     try:
-#         return (re.match('<font color="#(.*?)">(.*?)</font>', string).group(1), re.match('<font color="#(.*?)">(.*?)</font>', string).group(2))
-#     except:
-#         return ('', '')
-
-
 def showMessage(text, color='green'):
     app = g_appLoader.getDefBattleApp()
     if app is not None:
@@ -420,7 +416,6 @@ InputHandler.g_instance.onKeyUp += handleKeyEvent
 
 def new_Hangar__updateAll(self):
     old_Hangar__updateAll(self)
-    #print 'debug: Hangar.__updateAll'
     ga.send_screenview()
 
 old_Hangar__updateAll = Hangar._Hangar__updateAll
@@ -429,7 +424,6 @@ Hangar._Hangar__updateAll = new_Hangar__updateAll
 
 def new__onVehicleListUpdate(self, argStr):
     old__onVehicleListUpdate(self, argStr)
-    #print 'onVehicleListUpdate'
     stats.loadStats()
 
 
@@ -507,6 +501,18 @@ def new_addVehicleInfo(self, vInfoVO, overrides):
 old_addVehicleInfo = VehicleInfoComponent.addVehicleInfo
 VehicleInfoComponent.addVehicleInfo = new_addVehicleInfo
 
+def new_makeItem(self, vInfoVO, vStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False):
+    item = old_makeItem(self, vInfoVO, vStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout)
+    if config('battleLoading/enable'):
+        accountDBID = item['accountDBID']
+        playerInfo = stats.playersInfo.get(str(accountDBID), None)
+        if playerInfo is not None:
+            item['vehicleGuiName'] = config('battleLoading/vehicleName/left').format(**playerInfo) if vInfoVO.team == BigWorld.player().team else config('battleLoading/vehicleName/right').format(**playerInfo)
+            item['playerName'] = config('battleLoading/playerName/left').format(**playerInfo) if vInfoVO.team == BigWorld.player().team else config('battleLoading/playerName/right').format(**playerInfo) 
+    return item
+
+old_makeItem = BattleLoading._makeItem
+BattleLoading._makeItem = new_makeItem
 
 '''
 # DON'T DELETE IT

@@ -59,22 +59,22 @@
 		//Включить модуль playersPanel
 		"enable":true,
 		//Текстовое поле с никнеймом игрока в больших (large) ушах
-		"playerNameFull": {
-			"left": "<font color='#{colorEFF}'>{nick}</font>",
-			"right": "<font color='#{colorEFF}'>{nick}</font>"
-		},
+        "playerNameFull": {
+            "left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick}",
+			"right": "{nick:.10} <font size='12' face='Consolas' color='#{colorBattles}'>{kb:>3}</font>",
+        },
 		//Текстовое поле с никнеймом игрока в средних (medium) ушах
-		"playerNameCut": {
-			"left": "<font color='#{colorBattles}'>{kb}</font> {nick}",
-			"right": "{nick} <font color='#{colorBattles}'>{kb}</font>",
-			"width": 100
-		},
+        "playerNameCut": {
+            "left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick:.16}",
+			"right": "{nick:.16} <font size='12' face='Consolas' color='#{colorBattles}'>{kb:>3}</font>",
+            "width": 140
+        },
 		//Текстовое поле с названием танка в больших (large) и вторых средних (medium2) ушах
-		"vehicleName": {
-			"left": "<font color='#{colorEFF}'>{vehicle}</font>",
-			"right": "<font color='#{colorEFF}'>{vehicle}</font>",
-			"width": 80
-		}
+        "vehicleName": {
+            "left": "{vehicle}",
+			"right": "{vehicle}",
+            "width": 80
+        }
 	},
 	//Панель статистики по нажатию таб
 	"tab": {
@@ -82,16 +82,31 @@
 		"enable": true,
 		//Текстовое поле с никнеймом игрока
 		"playerName": {
-			"left": "<font size='12' face='Consolas'>{spg_percent:<5.2f}</font> <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
-			"right": "<font color='#{colorEFF}'>{name:.16}</font> <img src='{flag_url}' width='16' height='12'><font size='12' face='Consolas'>{spg_percent:5.2f}</font>",
-			"width": 180
+			"left": "<font size='12' face='Consolas'>{spg_percent:<5.2f}</font> <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
+			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'><font size='12' face='Consolas'>{spg_percent:5.2f}</font>",
+            "width": 180
 		},
 		//Текстовое поле с названием танка
 		"vehicleName": {
 			"left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
 			"right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>",
-			"width": 100
+            "width": 100
 		}
+    //Загрузка в бой
+    "battleLoading": {
+        //Включить модуль battleLoading
+        "enable": true,
+        //Текстовое поле с никнеймом игрока
+        "playerName": {
+            "left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
+            "right": "<font color='#{colorEFF}'>{name}</font> <img src='{flag_url}' width='16' height='12'>"
+        },
+        //Текстовое поле с названием танка
+        "vehicleName": {
+            "left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
+            "right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>"
+        }
+    },
 	},
 	//Настройка цветов
 	//Внимание, количество елементов во всех списках должно совпадать!
