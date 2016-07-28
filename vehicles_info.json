@@ -1,4 +1,28 @@
 {
+	"59409": {
+		"level": 5,
+		"type": "heavyTank",
+		"name": "VK 65.01 (H)",
+		"nation": "germany"
+	},
+	"56401": {
+		"level": 10,
+		"type": "heavyTank",
+		"name": "T95/Chieftain",
+		"nation": "uk"
+	},
+	"50433": {
+		"level": 10,
+		"type": "heavyTank",
+		"name": "Объект 257",
+		"nation": "ussr"
+	},
+	"50193": {
+		"level": 8,
+		"type": "AT-SPG",
+		"name": "Rheinmetall 12,8 cm K 43 Skorpion",
+		"nation": "germany"
+	},
 	"57089": {
 		"level": 7,
 		"type": "mediumTank",
