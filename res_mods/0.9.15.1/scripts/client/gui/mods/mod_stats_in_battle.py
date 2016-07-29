@@ -42,7 +42,7 @@ from gui.Scaleform.daapi.view.battle.shared.markers2d.plugins import VehicleMark
 
 
 CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
-__version__ = '2.1 test #3'
+__version__ = '2.1 test #4'
 __author__ = 'VasyaPRO_2014'
 
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
@@ -574,7 +574,7 @@ def new__addOrUpdateVehicleMarker(self, vProxy, vInfo, guiProps, active = True):
          hunting,
          squadIndex])
         if not vProxy.isAlive():
-            self.__updateMarkerState(markerID, 'dead', True)
+            self._VehicleMarkerPlugin__updateMarkerState(markerID, 'dead', True)
         if active:
             self._VehicleMarkerPlugin__updateVehicleStates(self._VehicleMarkerPlugin__vehiclesMarkers[vInfo.vehicleID], speaking, vProxy.health, flagBearer)
     return
