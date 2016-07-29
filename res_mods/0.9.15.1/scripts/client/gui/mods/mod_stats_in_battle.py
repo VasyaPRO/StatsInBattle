@@ -38,10 +38,11 @@ from gui.Scaleform.daapi.view.battle.shared.stats_exchage.stats_ctrl import Batt
 from gui.battle_control.arena_info import vos_collections
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.vehicle import VehicleInfoComponent
 from gui.Scaleform.daapi.view.battle_loading import BattleLoading
+from gui.Scaleform.daapi.view.battle.shared.markers2d.plugins import VehicleMarkerPlugin, VehicleMarker
 
 
 CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
-__version__ = '2.1 test #2'
+__version__ = '2.1 test #3'
 __author__ = 'VasyaPRO_2014'
 
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
@@ -63,6 +64,7 @@ class Config:
         try:
             file = open('res_mods/configs/StatsInBattle/StatsInBattle.json', 'r')
             f = file.read()
+            file.close()
             # Delete comments
             while f.count('/*'):
                 f = f.replace(f[f.find('/*'):f.find('*/') + 2 if f.find('*/') + 2 != 1 else len(f)], '')
@@ -78,13 +80,15 @@ class Config:
             cfg['playersPanel']['enable']
             cfg['playersPanel']['playerNameFull']['left']
             cfg['playersPanel']['playerNameFull']['right']
-            #cfg['playersPanel']['playerNameFull']['width']
+            cfg['playersPanel']['playerNameFull']['width']
             cfg['playersPanel']['playerNameCut']['left']
             cfg['playersPanel']['playerNameCut']['right']
             cfg['playersPanel']['playerNameCut']['width']
             cfg['playersPanel']['vehicleName']['left']
             cfg['playersPanel']['vehicleName']['right']
             cfg['playersPanel']['vehicleName']['width']
+            cfg['playersPanel']['switcherVisible']
+            cfg['playersPanel']['y']
             cfg['tab']['enable']
             cfg['tab']['playerName']['left']
             cfg['tab']['playerName']['right']
@@ -97,6 +101,9 @@ class Config:
             cfg['battleLoading']['playerName']['right']
             cfg['battleLoading']['vehicleName']['left']
             cfg['battleLoading']['vehicleName']['right']
+            cfg['marker']['enable']
+            cfg['marker']['playerName']
+            cfg['marker']['vehicleName']
             cfg['colors']['colorCodes']
             cfg['colors']['colorEFF']
             cfg['colors']['colorWGR']
@@ -115,8 +122,6 @@ class Config:
         else:
             self.config = cfg
             showMessage('[StatsInBattle] Config successfully loaded.', 'green')
-        finally:
-            file.close()
         return
 
     def reload(self):
@@ -143,18 +148,20 @@ class Config:
                 'playerNameFull': {
                     "left": '<font size="12" face="Consolas" color="#{colorBattles}">{kb:<3}</font> {nick}',
                     "right": '{nick:.10} <font size="12" face="Consolas" color="#{colorBattles}">{kb:>3}</font>',
-                    #'width' : 150
+                    'width' : 150
                 },
                 'playerNameCut': {
                     "left": '<font size="12" face="Consolas" color="#{colorBattles}">{kb:<3}</font> {nick:.16}',
                     "right": '{nick:.16} <font size="12" face="Consolas" color="#{colorBattles}">{kb:>3}</font>',
-                    'width': 44
+                    'width': 140
                 },
                 'vehicleName': {
                     'left': '{vehicle}',
-                    'right': '{vehicle',
+                    'right': '{vehicle}',
                     'width': 100
-                }
+                },
+                'switcherVisible': True,
+                'y': 65
             },
             'tab': {
                 'enable': True,
@@ -179,6 +186,11 @@ class Config:
                     'left': '<font face="Consolas"><font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font></font>',
                     'right': '<font face="Consolas"><font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font></font>'
                 },
+            },
+            'marker': {
+                'enable': True,
+                'playerName': '{eff} {nick}',
+                'vehicleName': '{winrate:.0f}% {vehicle}'
             },
             'colors': {
                 'colorCodes': ['FE0E00', 'FE7903', 'F8F400', '60FF00', '02C9B3', 'D042F3'],
@@ -435,54 +447,57 @@ def addStats():
     app = g_appLoader.getDefBattleApp()
     if app is None:
         return
-    playersPanel = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['playersPanel']
-    for i in range(playersPanel.flashObject.listLeft._items.length):
-        item = playersPanel.flashObject.listLeft.getItemsByIndex(i)
-        accountDBID = item.accountDBID
-        playerInfo = stats.playersInfo.get(str(int(accountDBID)), None)
-        #item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
-        item.listItem.playerNameCutTF.width = config('playersPanel/playerNameCut/width')
-        item.listItem.vehicleTF.width = config('playersPanel/vehicleName/width')
-        if playerInfo is not None:
-            item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/left').format(**playerInfo)
-            item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/left').format(**playerInfo)
-            item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/left').format(**playerInfo)
-    for i in range(playersPanel.flashObject.listRight._items.length):
-        item = playersPanel.flashObject.listRight.getItemsByIndex(i)
-        accountDBID = item.accountDBID
-        playerInfo = stats.playersInfo.get(str(int(accountDBID)),None)
-        #item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
-        item.listItem.playerNameCutTF.width = config('playersPanel/playerNameCut/width')
-        item.listItem.vehicleTF.width = config('playersPanel/vehicleName/width')
-        if playerInfo is not None:
-            item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/right').format(**playerInfo)
-            item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/right').format(**playerInfo)
-            item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/right').format(**playerInfo)
-
-    fullStats = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['fullStats']
-    for i in range(1, 16):
-        playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c1r%d' % i)
-        vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c1r%d' % i)
-        playerNameTF.width = config('tab/playerName/width')
-        vehicleNameTF.width = config('tab/vehicleName/width')
-        playerName = playerNameTF.text.split('[')[0].split('..')[0]
-        accountDBID = stats.getAccountDBIDByPlayerName(playerName)
-        playerInfo = stats.playersInfo.get(accountDBID,None)
-        if playerInfo is not None:
-            playerNameTF.htmlText = config('tab/playerName/left').format(**playerInfo)
-            vehicleNameTF.htmlText = config('tab/vehicleName/left').format(**playerInfo)
-    for i in range(1,16):
-        playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c2r%d' % i)
-        vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c2r%d' % i)
-        playerNameTF.width = config('tab/playerName/width')
-        vehicleNameTF.width = config('tab/vehicleName/width')
-        playerName = playerNameTF.text.split('[')[0].split('..')[0]
-        accountDBID = stats.getAccountDBIDByPlayerName(playerName)
-        playerInfo = stats.playersInfo.get(accountDBID,None)
-        if playerInfo is not None:
-            playerNameTF.htmlText = config('tab/playerName/right').format(**playerInfo)
-            vehicleNameTF.htmlText = config('tab/vehicleName/right').format(**playerInfo)
-        #print #getattr(fullStats.flashObject.statsTable, 'playerName_c1r%d' % i).text.split('[')[0]
+    if config('playersPanel/enable'):
+        playersPanel = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['playersPanel']
+        playersPanel.flashObject.panelSwitch.visible = config('playersPanel/switcherVisible')
+        playersPanel.flashObject.listLeft.y = config('playersPanel/y')
+        playersPanel.flashObject.listRight.y = config('playersPanel/y')
+        for i in range(playersPanel.flashObject.listLeft._items.length):
+            item = playersPanel.flashObject.listLeft.getItemsByIndex(i)
+            accountDBID = item.accountDBID
+            playerInfo = stats.playersInfo.get(str(int(accountDBID)), None)
+            if config('playersPanel/playerNameFull/width'): item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
+            if config('playersPanel/playerNameCut/width'): item.listItem.playerNameCutTF.width = config('playersPanel/playerNameCut/width')
+            if config('playersPanel/vehicleName/width'): item.listItem.vehicleTF.width = config('playersPanel/vehicleName/width')
+            if playerInfo is not None:
+                item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/left').format(**playerInfo)
+                item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/left').format(**playerInfo)
+                item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/left').format(**playerInfo)
+        for i in range(playersPanel.flashObject.listRight._items.length):
+            item = playersPanel.flashObject.listRight.getItemsByIndex(i)
+            accountDBID = item.accountDBID
+            playerInfo = stats.playersInfo.get(str(int(accountDBID)),None)
+            if config('playersPanel/playerNameFull/width'): item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
+            if config('playersPanel/playerNameCut/width'): item.listItem.playerNameCutTF.width = config('playersPanel/playerNameCut/width')
+            if config('playersPanel/vehicleName/width'): item.listItem.vehicleTF.width = config('playersPanel/vehicleName/width')
+            if playerInfo is not None:
+                item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/right').format(**playerInfo)
+                item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/right').format(**playerInfo)
+                item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/right').format(**playerInfo)
+    if config('tab/enable'):
+        fullStats = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['fullStats']
+        for i in range(1, 16):
+            playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c1r%d' % i)
+            vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c1r%d' % i)
+            if config('tab/playerName/width'): playerNameTF.width = config('tab/playerName/width')
+            if config('tab/vehicleName/width'): vehicleNameTF.width = config('tab/vehicleName/width')
+            playerName = playerNameTF.text.split('[')[0].split('..')[0]
+            accountDBID = stats.getAccountDBIDByPlayerName(playerName)
+            playerInfo = stats.playersInfo.get(accountDBID,None)
+            if playerInfo is not None:
+                playerNameTF.htmlText = config('tab/playerName/left').format(**playerInfo)
+                vehicleNameTF.htmlText = config('tab/vehicleName/left').format(**playerInfo)
+        for i in range(1,16):
+            playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c2r%d' % i)
+            vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c2r%d' % i)
+            if config('tab/playerName/width'): playerNameTF.width = config('tab/playerName/width')
+            if config('tab/vehicleName/width'): vehicleNameTF.width = config('tab/vehicleName/width')
+            playerName = playerNameTF.text.split('[')[0].split('..')[0]
+            accountDBID = stats.getAccountDBIDByPlayerName(playerName)
+            playerInfo = stats.playersInfo.get(accountDBID,None)
+            if playerInfo is not None:
+                playerNameTF.htmlText = config('tab/playerName/right').format(**playerInfo)
+                vehicleNameTF.htmlText = config('tab/vehicleName/right').format(**playerInfo)
 
 
 def new_BattleEntry_beforeDelete(self):
@@ -513,6 +528,57 @@ def new_makeItem(self, vInfoVO, vStatsVO, userGetter, isSpeaking, actionGetter, 
 
 old_makeItem = BattleLoading._makeItem
 BattleLoading._makeItem = new_makeItem
+
+def new__addOrUpdateVehicleMarker(self, vProxy, vInfo, guiProps, active = True):
+    # Original code
+    speaking = self.bwProto.voipController.isPlayerSpeaking(vInfo.player.accountDBID)
+    flagBearer = g_ctfManager.getVehicleCarriedFlagID(vInfo.vehicleID) is not None
+    if active:
+        mProv = vProxy.model.node('HP_gui')
+    else:
+        mProv = None
+    if vInfo.vehicleID in self._VehicleMarkerPlugin__vehiclesMarkers:
+        marker = self._VehicleMarkerPlugin__vehiclesMarkers[vInfo.vehicleID]
+        if marker.setActive(active):
+            self._setMarkerMatrix(marker.getMarkerID(), mProv)
+            self._setMarkerActive(marker.getMarkerID(), active)
+            self._VehicleMarkerPlugin__updateVehicleStates(marker, speaking, vProxy.health, flagBearer)
+            marker.attach(vProxy)
+    else:
+        hunting = VehicleActions.isHunting(vInfo.events)
+        markerID = self._createMarkerWithMatrix(mProv, 'VehicleMarker')
+        self._VehicleMarkerPlugin__vehiclesMarkers[vInfo.vehicleID] = VehicleMarker(markerID, vProxy, self._parentObj.getCanvasProxy(), active)
+        battleCtx = g_sessionProvider.getCtx()
+        result = battleCtx.getPlayerFullNameParts(vProxy.id)
+        vType = vInfo.vehicleType
+        squadIndex = 0
+        if g_sessionProvider.arenaVisitor.gui.isFalloutMultiTeam() and vInfo.squadIndex:
+            squadIndex = vInfo.squadIndex
+        # My code
+        vehicleName = result.vehicleName
+        playerName = result.playerName
+        playerInfo = stats.playersInfo.get(str(vInfo.player.accountDBID))
+        if config('marker/enable') and playerInfo is not None:
+            playerName = config('marker/playerName').format(**playerInfo)
+            vehicleName = config('marker/vehicleName').format(**playerInfo)
+        self._invokeMarker(markerID, 'setVehicleInfo', [vType.classTag,
+         vType.iconPath,
+         vehicleName,
+         vType.level,
+         result.playerFullName,
+         playerName,
+         result.clanAbbrev,
+         result.regionCode,
+         vType.maxHealth,
+         guiProps.name(),
+         hunting,
+         squadIndex])
+        if not vProxy.isAlive():
+            self.__updateMarkerState(markerID, 'dead', True)
+        if active:
+            self._VehicleMarkerPlugin__updateVehicleStates(self._VehicleMarkerPlugin__vehiclesMarkers[vInfo.vehicleID], speaking, vProxy.health, flagBearer)
+    return
+VehicleMarkerPlugin._VehicleMarkerPlugin__addOrUpdateVehicleMarker = new__addOrUpdateVehicleMarker
 
 '''
 # DON'T DELETE IT
