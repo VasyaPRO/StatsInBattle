@@ -54,32 +54,32 @@
 	// Убедительная просьба: не выключайте данную функцию, при выкладывании конфига/мода в общий доступ, спасибо.
 	"allowAnalytics": true,
 	// Панель игроков ("уши" команд)
-	// Во всех режимах left - формат для левой панели (союзники), rigth - для правой (враги)
+	// Во всех режимах left - формат для левой панели (союзники), right - для правой (враги)
 	"playersPanel":{
 		// Включить модуль playersPanel
 		"enable":true,
 		// Текстовое поле с никнеймом игрока в больших (large) ушах
-        "playerNameFull": {
-            "left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick}",
+		"playerNameFull": {
+			"left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick}",
 			"right": "{nick:.10} <font size='12' face='Consolas' color='#{colorBattles}'>{kb:>3}</font>",
-            "width": 0 // 0 - ширина по умолчанию
-        },
+			"width": 0 // 0 - ширина по умолчанию
+		},
 		// Текстовое поле с никнеймом игрока в средних (medium) ушах
-        "playerNameCut": {
-            "left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick:.16}",
+		"playerNameCut": {
+			"left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick:.16}",
 			"right": "{nick:.16} <font size='12' face='Consolas' color='#{colorBattles}'>{kb:>3}</font>",
-            "width": 140
-        },
+			"width": 140
+		},
 		// Текстовое поле с названием танка в больших (large) и вторых средних (medium2) ушах
-        "vehicleName": {
-            "left": "{vehicle}",
+		"vehicleName": {
+			"left": "{vehicle}",
 			"right": "{vehicle}",
-            "width": 80
-        },
-        // Видимость переключателя режимов ушей мишью
-        "switcherVisible": true,
-        // Положение по вертикали
-        "y": 65
+			"width": 80
+		},
+		// Видимость переключателя режимов ушей мишью
+		"switcherVisible": true,
+		// Положение по вертикали
+		"y": 65
 	},
 	// Панель статистики по нажатию таб
 	"tab": {
@@ -89,41 +89,41 @@
 		"playerName": {
 			"left": "<font size='12' face='Consolas'>{spg_percent:<5.2f}</font> <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
 			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'><font size='12' face='Consolas'>{spg_percent:5.2f}</font>",
-            "width": 180
+			"width": 180
 		},
 		// Текстовое поле с названием танка
 		"vehicleName": {
 			"left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
 			"right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>",
-            "width": 100
+			"width": 100
 		}
-    },
-    // Загрузка в бой
-    "battleLoading": {
-        // Включить модуль battleLoading
-        "enable": true,
-        // Текстовое поле с никнеймом игрока
-        "playerName": {
-            "left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
-            "right": "<font color='#{colorEFF}'>{name}</font> <img src='{flag_url}' width='16' height='12'>"
-        },
-        // Текстовое поле с названием танка
-        "vehicleName": {
-            "left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
-            "right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>"
-        }
-    },
-    // Маркеры над танками
-    "marker": {
-        // Включить модуль marker
-        "enable": true,
-        // Текстовое поле с никнеймом игрока
-        "playerName": "{eff} {nick}",
-        // Текстовое поле с названием танка
-        "vehicleName": "{winrate:.0f}% {vehicle}"
-    },
+	},
+	// Загрузка в бой
+	"battleLoading": {
+		// Включить модуль battleLoading
+		"enable": true,
+		// Текстовое поле с никнеймом игрока
+		"playerName": {
+			"left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
+			"right": "<font color='#{colorEFF}'>{name}</font> <img src='{flag_url}' width='16' height='12'>"
+		},
+		// Текстовое поле с названием танка
+		"vehicleName": {
+			"left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
+			"right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>"
+		}
+	},
+	// Маркеры над танками
+	"marker": {
+		// Включить модуль marker
+		"enable": true,
+		// Текстовое поле с никнеймом игрока
+		"playerName": "{eff} {nick}",
+		// Текстовое поле с названием танка
+		"vehicleName": "{winrate:.0f}% {vehicle}"
+	},
 	// Настройка цветов
-	// Внимание, количество елементов во всех списках должно совпадать!
+	// Внимание, количество элементов во всех списках должно совпадать!
 	"colors": {
 		// HEX цветов в формате RGB
 		"colorCodes": ["FE0E00", "FE7903", "F8F400", "60FF00", "02C9B3", "D042F3"],

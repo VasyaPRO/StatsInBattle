@@ -3,9 +3,12 @@ import py_compile
 import zipfile
 import os
 
-cfg = json.load(open('build.json', 'r'))
+cfg = json.load(open('.\\build.json', 'r'))
 
-with zipfile.ZipFile('build\\StatsInBattle_v{version}.zip'.format(version=cfg['Version']), 'w', zipfile.ZIP_DEFLATED) as myzip:
+if not os.path.isdir('.\\build'):
+    os.mkdir('.\\build')
+
+with zipfile.ZipFile('.\\build\\StatsInBattle_v{version}.zip'.format(version=cfg['Version']), 'w', zipfile.ZIP_DEFLATED) as myzip:
     for file in cfg['files']:
         file = file.format(VersionWOT=cfg['VersionWOT'])
         if file[-1] == '*':

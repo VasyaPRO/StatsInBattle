@@ -316,15 +316,13 @@ class Statistics:
             except IOError:
                 showMessage('[StatsInBattle] Error loading vehicles.', 'red')
                 try:
-                    file = open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'r')
-                    self._vehiclesInfo = json.load(file)
-                    file.close()
+                    with open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'r') as file:
+                        self._vehiclesInfo = json.load(file)
                 except:
                     pass
             else:
-                file = open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'w')
-                json.dump(self._vehiclesInfo, file)
-                file.close()
+                with open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'w') as file:
+                    json.dump(self._vehiclesInfo, file)
 
 
     def getColor(self, rating, value):
