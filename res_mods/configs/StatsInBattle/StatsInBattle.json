@@ -12,6 +12,9 @@
 		{eff} - рейтинг EFF (РЭ)
 		{wn7} - рейтинг WN7
 		{wn6} - рейтинг WN6
+		{xeff} - рейтинг EFF в шкале XVM (0-99, XX для топовых показателей)
+		{xwn6} - рейтинг WN6 в шкале XVM (0-99, XX для топовых показателей)
+		{xwgr} - рейтинг WGR в шкале XVM (0-99, XX для топовых показателей)
 		{winrate} - процент побед, для отображения N чисел после запятой используйте {winrate:0.Nf}, например {winrate:0.2f} - два знака после запятой
 		{battles} - количество боев
 		{kb} - количество килобоев (1kb = 1000battles)
@@ -24,7 +27,7 @@
 		{colorWN6} - динамический цвет по рейтингу WN6
 		{colorWinrate} - динамический цвет по проценту побед
 		{colorBattles} - динамический цвет по количеству боев
-		{default_color} - стандартный цвет в ушах (Работает только в ушах (playersPanel))
+		{colorTBattles} - динамический цвет по количеству боев на танке
 	Информация об игроке:
 		{name} - никнейм игрока
 		{nick} - никнейм игрока с названием клана
@@ -39,6 +42,8 @@
 		{level} - уровень танка
 		{type} - тип танка
 		{nation} - нация танка
+		{t_battles} - количество боев на танке
+		{t_kb} - количество боев на танке, если больше 99 - количество гектобоев, если больше 999 - количество килобоев
 */
 {
 	// Горячая клавиша перезагрузки конфига (см. список клавиш в конце конфига)
@@ -60,20 +65,20 @@
 		"enable":true,
 		// Текстовое поле с никнеймом игрока в больших (large) ушах
 		"playerNameFull": {
-			"left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick}",
-			"right": "{nick:.10} <font size='12' face='Consolas' color='#{colorBattles}'>{kb:>3}</font>",
+			"left": "<font color='#{colorEFF}'>{xeff:<2}</font> {nick}",
+			"right": "{nick} <font color='#{colorEFF}'>{xeff:2}</font>",
 			"width": 0 // 0 - ширина по умолчанию
 		},
 		// Текстовое поле с никнеймом игрока в средних (medium) ушах
 		"playerNameCut": {
-			"left": "<font size='12' face='Consolas' color='#{colorBattles}'>{kb:<3}</font> {nick:.16}",
-			"right": "{nick:.16} <font size='12' face='Consolas' color='#{colorBattles}'>{kb:>3}</font>",
+			"left": "<font color='#{colorEFF}'>{xeff:<2}</font> {nick}",
+			"right": "{nick:.18} <font color='#{colorEFF}'>{xeff:2}</font>",
 			"width": 140
 		},
 		// Текстовое поле с названием танка в больших (large) и вторых средних (medium2) ушах
 		"vehicleName": {
-			"left": "{vehicle}",
-			"right": "{vehicle}",
+			"left": "<font color='#{colorTBattles}'>{vehicle}</font>",
+			"right": "<font color='#{colorTBattles}'>{vehicle}</font>",
 			"width": 80
 		},
 		// Видимость переключателя режимов ушей мышью
@@ -87,14 +92,14 @@
 		"enable": true,
 		// Текстовое поле с никнеймом игрока
 		"playerName": {
-			"left": "<font size='12' face='Consolas'>{spg_percent:<5.2f}</font> <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
-			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'><font size='12' face='Consolas'>{spg_percent:5.2f}</font>",
+			"left": "{spg_percent:<5.2f} <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
+			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'> {spg_percent:5.2f}",
 			"width": 180
 		},
 		// Текстовое поле с названием танка
 		"vehicleName": {
-			"left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
-			"right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>",
+			"left": "<font color='#{colorTBattles}'>{t_kb:2}</font> <font color='#{colorBattles}'>{kb:3}</font> <font color='#{colorWinrate}'>{winrate:2.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font>",
+			"right": "<font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:<2.0f}%</font> <font color='#{colorBattles}'>{kb:<3}</font> <font color='#{colorTBattles}'>{t_kb:<2}</font>",
 			"width": 100
 		}
 	},
@@ -104,13 +109,13 @@
 		"enable": true,
 		// Текстовое поле с никнеймом игрока
 		"playerName": {
-			"left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{name}</font>",
-			"right": "<font color='#{colorEFF}'>{name}</font> <img src='{flag_url}' width='16' height='12'>"
+			"left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
+			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'>"
 		},
 		// Текстовое поле с названием танка
 		"vehicleName": {
-			"left": "<font face='Consolas'><font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font></font>",
-			"right": "<font face='Consolas'><font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font></font>"
+			"left": "<font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font>",
+			"right": "<font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font>"
 		}
 	},
 	// Маркеры над танками
@@ -126,19 +131,21 @@
 	// Внимание, количество элементов во всех списках должно совпадать!
 	"colors": {
 		// HEX цветов в формате RGB
-		"colorCodes": ["FE0E00", "FE7903", "F8F400", "60FF00", "02C9B3", "D042F3"],
+		"codes": ["FE0E00", "FE7903", "F8F400", "60FF00", "02C9B3", "D042F3"],
 		// Соответствующие цветовые критерии для рейтинга EFF (РЭ)
-		"colorEFF": [1, 615, 870, 1175, 1525, 1850],
+		"EFF": [1, 615, 870, 1175, 1525, 1850],
 		// Соответствующие цветовые критерии для рейтинга WGR (ЛРИ)
-		"colorWGR": [1, 2495, 4345, 6425, 8625, 10040],
+		"WGR": [1, 2495, 4345, 6425, 8625, 10040],
 		// Соответствующие цветовые критерии для рейтинга WN7
-		"colorWN7": [1, 495, 860, 1220, 1620, 1965],
+		"WN7": [1, 495, 860, 1220, 1620, 1965],
 		// Соответствующие цветовые критерии для рейтинга WN6
-		"colorWN6": [1, 460, 850, 1215, 1620, 1960],
+		"WN6": [1, 460, 850, 1215, 1620, 1960],
 		// Соответствующие цветовые критерии для процента побед
-		"colorWinrate": [1, 47, 49, 52.5, 58, 65],
+		"winrate": [1, 47, 49, 52.5, 58, 65],
 		// Соответствующие цветовые критерии для количества боев
-		"colorBattles": [1, 2000, 6000, 16000, 30000, 43000]
+		"battles": [1, 2000, 6000, 16000, 30000, 43000],
+		// Соответствующие цветовые критерии для количества боев на танке
+		"t_battles": [1, 100, 250, 500, 1000, 1800]
 	}
 }
 /* KEY_NONE, KEY_MOUSE0, KEY_MOUSE1, KEY_MOUSE2, KEY_MOUSE3, KEY_MOUSE4, KEY_MOUSE5, KEY_MOUSE6, KEY_MOUSE7, KEY_A, KEY_B,

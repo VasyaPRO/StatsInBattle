@@ -1,0 +1,50 @@
+diff -Naur lobby-0.orig/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm lobby-0/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm
+--- lobby-0.orig/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm	2016-08-03 19:53:35.804259000 +0300
++++ lobby-0/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm	2016-08-03 23:53:08.168536900 +0300
+@@ -423,27 +423,11 @@
+       pushtrue
+       setproperty         QName(PackageNamespace(""), "visible")
+ 
+-      getlex              QName(PackageNamespace(""), "App")
+-      getproperty         QName(PackageNamespace(""), "utils")
+-      getproperty         QName(Namespace("net.wg.utils:IUtils"), "commons")
+       getlex              QName(PackageNamespace(""), "textField")
+-      getlex              QName(PackageNamespace(""), "App")
+-      getproperty         QName(PackageNamespace(""), "utils")
+-      getproperty         QName(Namespace("net.wg.utils:IUtils"), "commons")
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.lobby.battleloading:PlayerItemRenderer"), "_model")
+       getproperty         QName(PackageNamespace(""), "playerName")
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.lobby.battleloading:PlayerItemRenderer"), "_model")
+-      getproperty         QName(PackageNamespace(""), "clanAbbrev")
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.lobby.battleloading:PlayerItemRenderer"), "_model")
+-      getproperty         QName(PackageNamespace(""), "region")
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.lobby.battleloading:PlayerItemRenderer"), "_model")
+-      getproperty         QName(PackageNamespace(""), "igrType")
+-      callproperty        QName(Namespace("net.wg.utils:ICommons"), "getUserProps"), 4
+-      callpropvoid        QName(Namespace("net.wg.utils:ICommons"), "formatPlayerName"), 2
++      setproperty         QName(PackageNamespace(""), "htmlText")
+ 
+       getlocal0
+       getproperty         QName(PackageNamespace(""), "vehicleField")
+@@ -982,17 +966,6 @@
+       getlocal            6
+       iffalse             L69
+ 
+-      getlex              QName(PackageNamespace(""), "textField")
+-      getlocal            6
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "vehicleField")
+-      getlocal            6
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+       jump                L90
+ 
+ L69:

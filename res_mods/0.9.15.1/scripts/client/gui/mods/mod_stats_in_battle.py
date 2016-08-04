@@ -6,43 +6,32 @@ import json
 import urllib
 import urllib2
 import math
-import os
 import re
 import threading
 import time
 import nations
 
-from Avatar import PlayerAvatar
 from Account import PlayerAccount
 from gui import SystemMessages
 from gui import InputHandler
 from gui.app_loader import g_appLoader
-from account_helpers.settings_core.SettingsCore import g_settingsCore
-from gui.Scaleform.daapi.view.battle.legacy.stats_form import _StatsForm
-from gui.battle_control.battle_arena_ctrl import BattleArenaController
 from gui.Scaleform.battle_entry import BattleEntry
 from gui.Scaleform.daapi.view.battle_loading import BattleLoading
-from gui.Scaleform.daapi.view.battle.legacy.markers import _VehicleMarker, MarkersManager
-from gui import GUI_SETTINGS
 from gui.battle_control.arena_info.arena_vos import VehicleActions
-from gui.battle_control import g_sessionProvider, arena_info
+from gui.battle_control import g_sessionProvider
 from CTFManager import g_ctfManager
 from constants import AUTH_REALM
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from items.vehicles import VEHICLE_CLASS_TAGS
 from ClientArena import ClientArena
 from gui.Scaleform.framework import ViewTypes
-from PlayerEvents import g_playerEvents
 from helpers import getClientVersion
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.stats_ctrl import BattleStatisticsDataController
-from gui.battle_control.arena_info import vos_collections
-from gui.Scaleform.daapi.view.battle.shared.stats_exchage.vehicle import VehicleInfoComponent
-from gui.Scaleform.daapi.view.battle_loading import BattleLoading
 from gui.Scaleform.daapi.view.battle.shared.markers2d.plugins import VehicleMarkerPlugin, VehicleMarker
 
 
 CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
-__version__ = '2.1 test #4'
+__version__ = '2.1'
 __author__ = 'VasyaPRO_2014'
 
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
@@ -65,12 +54,7 @@ class Config:
             file = open('res_mods/configs/StatsInBattle/StatsInBattle.json', 'r')
             f = file.read()
             file.close()
-            # Delete comments
-            while f.count('/*'):
-                f = f.replace(f[f.find('/*'):f.find('*/') + 2 if f.find('*/') + 2 != 1 else len(f)], '')
-            while f.count('//'):
-                f = f.replace(f[f.find('//'):f.find('\n', f.find('//')) if f.find('\n', f.find('//')) != -1 else len(f)], '')
-            cfg = json.loads(f)
+            cfg = json.loads(self.removeComments(f))
             # Check on valid
             cfg['reloadKey']
             cfg['region']
@@ -104,14 +88,15 @@ class Config:
             cfg['marker']['enable']
             cfg['marker']['playerName']
             cfg['marker']['vehicleName']
-            cfg['colors']['colorCodes']
-            cfg['colors']['colorEFF']
-            cfg['colors']['colorWGR']
-            cfg['colors']['colorWN7']
-            cfg['colors']['colorWN6']
-            cfg['colors']['colorWinrate']
-            cfg['colors']['colorBattles']
-            if not len(cfg['colors']['colorCodes']) == len(cfg['colors']['colorEFF']) == len(cfg['colors']['colorWGR']) == len(cfg['colors']['colorWN7']) == len(cfg['colors']['colorWinrate']) == len(cfg['colors']['colorBattles']):
+            cfg['colors']['codes']
+            cfg['colors']['EFF']
+            cfg['colors']['WGR']
+            cfg['colors']['WN7']
+            cfg['colors']['WN6']
+            cfg['colors']['winrate']
+            cfg['colors']['battles']
+            cfg['colors']['t_battles']
+            if not all([len(x) == len(cfg['colors']['codes']) for x in cfg['colors'].values()]):
                 raise KeyError
         except IOError:
             showMessage('[StatsInBattle] Cannot open config file (res_mods/configs/StatsInBattle/StatsInBattle.json)', 'red')
@@ -135,6 +120,42 @@ class Config:
 
         addStats()
 
+    def removeComments(self, string):
+        tokenizer = re.compile('"|(/\\*)|(\\*/)|(//)|\n|\r')
+        end_slashes_re = re.compile('(\\\\)*$')
+        in_string = False
+        in_multi = False
+        in_single = False
+        result = []
+        index = 0
+        for match in re.finditer(tokenizer, string):
+            if not (in_multi or in_single):
+                tmp = string[index:match.start()]
+                if not in_string:
+                    tmp = re.sub('[ \t\n\r]+', '', tmp)
+                result.append(tmp)
+            index = match.end()
+            val = match.group()
+            if val == '"' and not (in_multi or in_single):
+                escaped = end_slashes_re.search(string, 0, match.start())
+                if not in_string or escaped is None or len(escaped.group()) % 2 == 0:
+                    in_string = not in_string
+                index -= 1
+            elif not (in_string or in_multi or in_single):
+                if val == '/*':
+                    in_multi = True
+                elif val == '//':
+                    in_single = True
+            elif val == '*/' and in_multi and not (in_string or in_single):
+                in_multi = False
+            elif val in '\r\n' and not (in_multi or in_string) and in_single:
+                in_single = False
+            elif not (in_multi or in_single or val in ' \r\n\t'):
+                result.append(val)
+
+        result.append(string[index:])
+        return ''.join(result)
+
     def loadDefault(self):
         showMessage('[StatsInBattle] Loading default config.', 'green')
         self.config = {
@@ -146,19 +167,19 @@ class Config:
             'playersPanel': {
                 'enable':True,
                 'playerNameFull': {
-                    "left": '<font size="12" face="Consolas" color="#{colorBattles}">{kb:<3}</font> {nick}',
-                    "right": '{nick:.10} <font size="12" face="Consolas" color="#{colorBattles}">{kb:>3}</font>',
-                    'width' : 150
+                    'left': '<font color="#{colorEFF}">{xeff:<2}</font> {nick}',
+                    'right': '{nick} <font color="#{colorEFF}">{xeff:2}</font>',
+                    'width' : 0
                 },
                 'playerNameCut': {
-                    "left": '<font size="12" face="Consolas" color="#{colorBattles}">{kb:<3}</font> {nick:.16}',
-                    "right": '{nick:.16} <font size="12" face="Consolas" color="#{colorBattles}">{kb:>3}</font>',
+                    'left': '<font color="#{colorEFF}">{xeff:<2}</font> {nick}',
+                    'right': '{nick:.18} <font color="#{colorEFF}">{xeff:<2}</font>',
                     'width': 140
                 },
                 'vehicleName': {
-                    'left': '{vehicle}',
-                    'right': '{vehicle}',
-                    'width': 100
+                    'left': '<font color="#{colorTBattles}">{vehicle}</font>',
+                    'right': '<font color="#{colorTBattles}">{vehicle}</font>',
+                    'width': 0
                 },
                 'switcherVisible': True,
                 'y': 65
@@ -166,25 +187,25 @@ class Config:
             'tab': {
                 'enable': True,
                 'playerName': {
-                    'left': '<font size="12" face="Consolas">{spg_percent:<5.2f}</font> <img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{name}</font>',
-                    'right': '<font color="#{colorEFF}">{name:.16}</font> <img src="{flag_url}" width="16" height="12"><font size="12" face="Consolas">{spg_percent:5.2f}</font>',
+                    'left': '{spg_percent:<5.2f} <img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{nick}</font>',
+                    'right': '<font color="#{colorEFF}">{nick:.16}</font> <img src="{flag_url}" width="16" height="12"> {spg_percent:5.2f}',
                     'width': 180
                 },
                 'vehicleName': {
-                    'left': '<font face="Consolas"><font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font></font>',
-                    'right': '<font face="Consolas"><font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font></font>',
+                    'left': '<font color="#{colorTBattles}">{t_kb:2}</font> <font color="#{colorBattles}">{kb:3}</font> <font color="#{colorWinrate}">{winrate:2.0f}%</font> <font color="#{colorEFF}">{eff:4}</font>',
+                    'right': '<font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:<2.0f}%</font> <font color="#{colorBattles}">{kb:<3}</font> <font color="#{colorTBattles}">{t_kb:<2}</font>',
                     'width': 100
                 }
             },
             'battleLoading': {
                 'enable': True,
                 'playerName': {
-                    'left': '<img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{name}</font>',
-                    'right': '<font color="#{colorEFF}">{name:.16}</font> <img src="{flag_url}" width="16" height="12">'
+                    'left': '<img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{nick}</font>',
+                    'right': '<font color="#{colorEFF}">{nick:.16}</font> <img src="{flag_url}" width="16" height="12">'
                 },
                 'vehicleName': {
-                    'left': '<font face="Consolas"><font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font></font>',
-                    'right': '<font face="Consolas"><font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font></font>'
+                    'left': '<font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font>',
+                    'right': '<font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font>'
                 },
             },
             'marker': {
@@ -193,13 +214,14 @@ class Config:
                 'vehicleName': '{winrate:.0f}% {vehicle}'
             },
             'colors': {
-                'colorCodes': ['FE0E00', 'FE7903', 'F8F400', '60FF00', '02C9B3', 'D042F3'],
-                'colorEFF': [1, 615, 870, 1175, 1525, 1850],
-                'colorWGR': [1, 2495, 4345, 6425, 8625, 10040],
-                'colorWN7': [1, 495, 860, 1220, 1620, 1965],
-                'colorWN6': [1, 460, 850, 1215, 1620, 1960],
-                'colorWinrate': [1, 47, 49, 52.5, 58, 65],
-                'colorBattles': [1, 2000, 6000, 16000, 30000, 43000]
+                'codes': ['FE0E00', 'FE7903', 'F8F400', '60FF00', '02C9B3', 'D042F3'],
+                'EFF': [1, 615, 870, 1175, 1525, 1850],
+                'WGR': [1, 2495, 4345, 6425, 8625, 10040],
+                'WN7': [1, 495, 860, 1220, 1620, 1965],
+                'WN6': [1, 460, 850, 1215, 1620, 1960],
+                'winrate': [1, 47, 49, 52.5, 58, 65],
+                'battles': [1, 2000, 6000, 16000, 30000, 43000],
+                't_battles': [1, 100, 250, 500, 1000, 1800]
             }
         }
 
@@ -246,14 +268,17 @@ class Statistics:
                             self.playersInfo[dbID]['type'] = tuple(value['vehicleType'].type.tags & VEHICLE_CLASS_TAGS)[0]
                             self.playersInfo[dbID]['nation'] = nations.NAMES[value['vehicleType'].type.customizationNationID]
                             self.playersInfo[dbID]['wgr'] = self._account_info[dbID]['global_rating']
+                            self.playersInfo[dbID]['xwgr'] = self.getXWGR(self.playersInfo[dbID]['wgr'])
                             self.playersInfo[dbID]['battles'] = self._account_info[dbID]['statistics']['all']['battles']
                             self.playersInfo[dbID]['winrate'] = self._account_info[dbID]['statistics']['all']['wins'] * 100.0 / self._account_info[dbID]['statistics']['all']['battles']
                             self.playersInfo[dbID]['kb'] = str(int(round(self._account_info[dbID]['statistics']['all']['battles']/1000, 0))) + 'k' if self._account_info[dbID]['statistics']['all']['battles'] >= 1000 else self._account_info[dbID]['statistics']['all']['battles']
-                            self.playersInfo[dbID]['colorWGR'] = self.getColor('colorWGR', self.playersInfo[dbID]['wgr'])
-                            self.playersInfo[dbID]['colorBattles'] = self.getColor('colorBattles', self.playersInfo[dbID]['battles'])
-                            self.playersInfo[dbID]['colorWinrate'] = self.getColor('colorWinrate', self._account_info[dbID]['statistics']['all']['wins'] * 100.0 / self._account_info[dbID]['statistics']['all']['battles'])
+                            self.playersInfo[dbID]['colorWGR'] = self.getColor('WGR', self.playersInfo[dbID]['wgr'])
+                            self.playersInfo[dbID]['colorBattles'] = self.getColor('battles', self.playersInfo[dbID]['battles'])
+                            self.playersInfo[dbID]['colorWinrate'] = self.getColor('winrate', self._account_info[dbID]['statistics']['all']['wins'] * 100.0 / self._account_info[dbID]['statistics']['all']['battles'])
                             self.playersInfo[dbID]['lang'] = self._account_info[dbID]['client_language']
                             self.playersInfo[dbID]['flag_url'] = 'img://scripts/client/gui/mods/mod_stats_in_battle/flags/' + self.playersInfo[dbID]['lang'] + '.png'
+                            self.playersInfo[dbID]['t_battles'] = 0
+                            self.playersInfo[dbID]['t_kb'] = 0
                             self.playersInfo[dbID]['spg_battles'] = 0
                             if self._vehiclesInfo is not None:
                                 avgDmg = self._account_info[dbID]['statistics']['all']['damage_dealt'] / float(self._account_info[dbID]['statistics']['all']['battles'])
@@ -265,6 +290,14 @@ class Statistics:
                                 winrate = self._account_info[dbID]['statistics']['all']['wins'] * 100.0 / self._account_info[dbID]['statistics']['all']['battles']
                                 player_tier_temp = 0
                                 for tank in self._account_tanks[dbID]:
+                                    if tank['tank_id'] == self.playersInfo[dbID]['tank_id']:
+                                        self.playersInfo[dbID]['t_battles'] = tank['statistics']['battles']
+                                        if tank['statistics']['battles'] < 100:
+                                            self.playersInfo[dbID]['t_kb'] = tank['statistics']['battles']
+                                        elif tank['statistics']['battles'] < 1000:
+                                            self.playersInfo[dbID]['t_kb'] = str(int(round(tank['statistics']['battles'] / 100.0, 0))) + 'h'
+                                        else:
+                                            self.playersInfo[dbID]['t_kb'] = str(int(round(tank['statistics']['battles'] / 1000.0, 0))) + 'k'
                                     if str(tank['tank_id']) in self._vehiclesInfo:
                                         player_tier_temp += self._vehiclesInfo[str(tank['tank_id'])]['level'] * tank['statistics']['battles']
                                         if self._vehiclesInfo[str(tank['tank_id'])]['type'] == 'SPG':
@@ -273,20 +306,25 @@ class Statistics:
                                         description = 'ERROR: unknown tank_id %s in player %s' % (tank['tank_id'], dbID)
                                         if self.playersInfo[dbID]['tank_id'] == tank['tank_id']:
                                             player_tier_temp += self.playersInfo[dbID]['level'] * tank['statistics']['battles']
-                                            description += ' (%s, level %d, type %s, nation %s)' % (self.playersInfo[dbID]['vehicle'], self.playersInfo[dbID]['level'], self.playersInfo[dbID]['type'], self.playersInfo[dbID]['nation'])
+                                            description += ' (%s, level %d, type %s, nation %s)' % (value['vehicleType'].type.userString, self.playersInfo[dbID]['level'], self.playersInfo[dbID]['type'], self.playersInfo[dbID]['nation'])
                                         ga.send_exception(description)
                                 avgTier = float(player_tier_temp) / self._account_info[dbID]['statistics']['all']['battles']
                                 self.playersInfo[dbID]['eff'] = self.getEFF(avgDmg, avgTier, avgFrags, avgSpot, avgCap, avgDef)
                                 self.playersInfo[dbID]['wn7'] = self.getWN7(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate, battles)
                                 self.playersInfo[dbID]['wn6'] = self.getWN6(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate)
+                                self.playersInfo[dbID]['xeff'] = self.getXEFF(self.playersInfo[dbID]['eff'])
+                                self.playersInfo[dbID]['xwn6'] = self.getXWN6(self.playersInfo[dbID]['wn6'])
                                 self.playersInfo[dbID]['spg_percent'] = float(self.playersInfo[dbID]['spg_battles']) / battles * 100.0
                             else:
                                 self.playersInfo[dbID]['eff'] = 0
                                 self.playersInfo[dbID]['wn7'] = 0
                                 self.playersInfo[dbID]['wn6'] = 0
-                            self.playersInfo[dbID]['colorEFF'] = self.getColor('colorEFF', self.playersInfo[dbID]['eff'])
-                            self.playersInfo[dbID]['colorWN7'] = self.getColor('colorWN7', self.playersInfo[dbID]['wn7'])
-                            self.playersInfo[dbID]['colorWN6'] = self.getColor('colorWN6', self.playersInfo[dbID]['wn6'])
+                                self.playersInfo[dbID]['xeff'] = 0
+                                self.playersInfo[dbID]['xwn6'] = 0
+                            self.playersInfo[dbID]['colorEFF'] = self.getColor('EFF', self.playersInfo[dbID]['eff'])
+                            self.playersInfo[dbID]['colorWN7'] = self.getColor('WN7', self.playersInfo[dbID]['wn7'])
+                            self.playersInfo[dbID]['colorWN6'] = self.getColor('WN6', self.playersInfo[dbID]['wn6'])
+                            self.playersInfo[dbID]['colorTBattles'] = self.getColor('t_battles', self.playersInfo[dbID]['t_battles'])
 
     def resetStats(self):
         self.dbIDs = []
@@ -305,6 +343,18 @@ class Statistics:
     @staticmethod
     def getWN6(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate):
         return int(round((1240 - 1040 / (min(avgTier, 6)) ** 0.164) * avgFrags + avgDmg * 530 / (184 * math.exp(0.24 * avgTier) + 130) + avgSpot * 125 + min(avgDef, 2.2) * 100 + ((185 / (0.17 + math.exp((winrate - 35) * -0.134))) - 500) * 0.45 + (6 - min(avgTier, 6)) * -60))
+
+    @staticmethod
+    def getXEFF(eff):
+        return 'XX' if eff > 2300 else int(round(max(0, min(100, eff*(eff*(eff*(eff*(eff*(eff* 0.000000000000000006449 - 0.00000000000004089) + 0.00000000008302) - 0.00000004433) - 0.0000482) + 0.1257) - 40.42))))
+
+    @staticmethod
+    def getXWN6(wn6):
+        return 'XX' if wn6 > 2350 else round(max(0, min(100, wn6*(wn6*(wn6*(wn6*(wn6*(-wn6* 0.000000000000000000852 + 0.000000000000008649) - 0.000000000039744) + 0.00000008406) - 0.00007446) + 0.06904) - 6.19)))
+
+    @staticmethod
+    def getXWGR(wgr):
+        return 'XX' if wgr > 11100 else int(round(max(0, min(100, wgr*(wgr*(wgr*(wgr*(wgr*(-wgr*0.0000000000000000000013018 + 0.00000000000000004812) - 0.00000000000071831) + 0.0000000055583) - 0.000023362) + 0.059054) - 47.85))))
 
     def loadVehiclesInfo(self):
         if self._vehiclesInfo is None:
@@ -327,9 +377,9 @@ class Statistics:
 
     def getColor(self, rating, value):
         color = 'FFFFFF'
-        for i in range(len(config('colors/colorCodes'))):
+        for i, v in enumerate(config('colors/codes')):
             if value >= config('colors')[rating][i]:
-                color = config('colors/colorCodes')[i]
+                color = v
         return color
     
     def getAccountDBIDByPlayerName(self, playerName):
@@ -359,7 +409,6 @@ class Analytics(object):
 
     def screenview(self):
         if config('allowAnalytics'):
-            self.started = True
             player = BigWorld.player()
             param = urllib.urlencode({
                 'v': 1,
@@ -371,6 +420,7 @@ class Analytics(object):
                 'cd': '%s [%s]' % (player.name, AUTH_REALM)
                 })
             urllib2.urlopen(url='http://www.google-analytics.com/collect?', data=param)
+            self.started = True
 
     def send_screenview(self):
         if not self.started:
@@ -450,8 +500,8 @@ def addStats():
         playersPanel.flashObject.panelSwitch.visible = config('playersPanel/switcherVisible')
         playersPanel.flashObject.listLeft.y = config('playersPanel/y')
         playersPanel.flashObject.listRight.y = config('playersPanel/y')
-        for i in range(playersPanel.flashObject.listLeft._items.length):
-            item = playersPanel.flashObject.listLeft.getItemsByIndex(i)
+        for i in range(playersPanel.flashObject.listLeft.getItemsLength()):
+            item = playersPanel.flashObject.listLeft.getItemByIndex(i)
             accountDBID = item.accountDBID
             playerInfo = stats.playersInfo.get(str(int(accountDBID)), None)
             if config('playersPanel/playerNameFull/width'): item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
@@ -461,8 +511,8 @@ def addStats():
                 item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/left').format(**playerInfo)
                 item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/left').format(**playerInfo)
                 item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/left').format(**playerInfo)
-        for i in range(playersPanel.flashObject.listRight._items.length):
-            item = playersPanel.flashObject.listRight.getItemsByIndex(i)
+        for i in range(playersPanel.flashObject.listRight.getItemsLength()):
+            item = playersPanel.flashObject.listRight.getItemByIndex(i)
             accountDBID = item.accountDBID
             playerInfo = stats.playersInfo.get(str(int(accountDBID)),None)
             if config('playersPanel/playerNameFull/width'): item.listItem.playerNameFullTF.width = config('playersPanel/playerNameFull/width')
@@ -505,14 +555,6 @@ def new_BattleEntry_beforeDelete(self):
 old_BattleEntry_beforeDelete = BattleEntry.beforeDelete
 BattleEntry.beforeDelete=new_BattleEntry_beforeDelete
 
-def new_addVehicleInfo(self, vInfoVO, overrides):
-    BigWorld.callback(2.0, addStats)
-    #print 'addVehicleInfo'
-    return old_addVehicleInfo(self, vInfoVO, overrides)
-
-
-old_addVehicleInfo = VehicleInfoComponent.addVehicleInfo
-VehicleInfoComponent.addVehicleInfo = new_addVehicleInfo
 
 def new_makeItem(self, vInfoVO, vStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout = False):
     item = old_makeItem(self, vInfoVO, vStatsVO, userGetter, isSpeaking, actionGetter, regionGetter, playerTeam, isEnemy, squadIdx, isFallout)
@@ -578,21 +620,14 @@ def new__addOrUpdateVehicleMarker(self, vProxy, vInfo, guiProps, active = True):
     return
 VehicleMarkerPlugin._VehicleMarkerPlugin__addOrUpdateVehicleMarker = new__addOrUpdateVehicleMarker
 
-'''
-# DON'T DELETE IT
-def new_BattleEntry_onAddToIgnored(self, _, uid, userName):
-    old_BattleEntry_onAddToIgnored(self, _, uid, stats.playersInfo[str(int(uid))]['name'])
 
-old_BattleEntry_onAddToIgnored = BattleEntry._BattleEntry__onAddToIgnored
-BattleEntry._BattleEntry__onAddToIgnored = new_BattleEntry_onAddToIgnored
+def new_as_setVehiclesDataS(self,data):
+    old_as_setVehiclesDataS(self,data)
+    BigWorld.callback(0.0, addStats)
 
+old_as_setVehiclesDataS = BattleStatisticsDataController.as_setVehiclesDataS
+BattleStatisticsDataController.as_setVehiclesDataS = new_as_setVehiclesDataS
 
-def new_BattleEntry_onAddToFriends(self, _, uid, userName):
-    old_BattleEntry_onAddToFriends(self, _, uid, stats.playersInfo[str(int(uid))]['name'])
-
-old_BattleEntry_onAddToFriends = BattleEntry._BattleEntry__onAddToFriends
-BattleEntry._BattleEntry__onAddToFriends = new_BattleEntry_onAddToFriends 
-'''
 
 ga = Analytics()
 config = Config()
