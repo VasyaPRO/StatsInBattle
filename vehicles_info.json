@@ -1,4 +1,10 @@
 {
+	"51585": { 
+		"level": 6,
+		"type": "mediumTank",
+		"name": "Strv m/42-57 Alt A.2",
+		"nation": "sweden"
+	},
 	"59409": {
 		"level": 5,
 		"type": "heavyTank",
