@@ -112,7 +112,7 @@ class Config:
     def reload(self):
         self.load()
 
-        arena = BigWorld.player().arena
+        arena = getattr(BigWorld.player(), 'arena', None)
         if arena is not None:
             ids = [str(pl['accountDBID']) for pl in arena.vehicles.values()]
             if ids != stats.dbIDs: # It is possible only on global map
