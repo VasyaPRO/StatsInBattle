@@ -31,7 +31,7 @@ from gui.Scaleform.daapi.view.battle.shared.markers2d.plugins import VehicleMark
 
 
 CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
-__version__ = '2.1'
+__version__ = '2.1.1'
 __author__ = 'VasyaPRO_2014'
 
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
@@ -381,11 +381,6 @@ class Statistics:
             if value >= config('colors')[rating][i]:
                 color = v
         return color
-    
-    def getAccountDBIDByPlayerName(self, playerName):
-        for id,value in self.playersInfo.items():
-            if value['name'].startswith(playerName):
-                return id
 
 
 class Analytics(object):
@@ -511,6 +506,7 @@ def addStats():
                 item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/left').format(**playerInfo)
                 item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/left').format(**playerInfo)
                 item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/left').format(**playerInfo)
+                item.listItem.updatePositions()
         for i in range(playersPanel.flashObject.listRight.getItemsLength()):
             item = playersPanel.flashObject.listRight.getItemByIndex(i)
             accountDBID = item.accountDBID
@@ -522,30 +518,21 @@ def addStats():
                 item.listItem.playerNameFullTF.htmlText = config('playersPanel/playerNameFull/right').format(**playerInfo)
                 item.listItem.playerNameCutTF.htmlText = config('playersPanel/playerNameCut/right').format(**playerInfo)
                 item.listItem.vehicleTF.htmlText = config('playersPanel/vehicleName/right').format(**playerInfo)
+                item.listItem.updatePositions()
     if config('tab/enable'):
         fullStats = app.containerManager.getContainer(ViewTypes.VIEW).getView().components['fullStats']
-        for i in range(1, 16):
-            playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c1r%d' % i)
-            vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c1r%d' % i)
+        for i,value in BigWorld.player().arena.vehicles.items():
+            itemHolder = fullStats.flashObject.getHolderByVehicleID(i)
+            playerNameTF = itemHolder.getStatsItem.playerNameTF
+            vehicleNameTF = itemHolder.getStatsItem.vehicleNameTF
             if config('tab/playerName/width'): playerNameTF.width = config('tab/playerName/width')
             if config('tab/vehicleName/width'): vehicleNameTF.width = config('tab/vehicleName/width')
-            playerName = playerNameTF.text.split('[')[0].split('..')[0]
-            accountDBID = stats.getAccountDBIDByPlayerName(playerName)
-            playerInfo = stats.playersInfo.get(accountDBID,None)
+            accountDBID = str(value['accountDBID'])
+            playerInfo = stats.playersInfo.get(accountDBID, None)
             if playerInfo is not None:
-                playerNameTF.htmlText = config('tab/playerName/left').format(**playerInfo)
-                vehicleNameTF.htmlText = config('tab/vehicleName/left').format(**playerInfo)
-        for i in range(1,16):
-            playerNameTF = getattr(fullStats.flashObject.statsTable, 'playerName_c2r%d' % i)
-            vehicleNameTF = getattr(fullStats.flashObject.statsTable, 'vehicleName_c2r%d' % i)
-            if config('tab/playerName/width'): playerNameTF.width = config('tab/playerName/width')
-            if config('tab/vehicleName/width'): vehicleNameTF.width = config('tab/vehicleName/width')
-            playerName = playerNameTF.text.split('[')[0].split('..')[0]
-            accountDBID = stats.getAccountDBIDByPlayerName(playerName)
-            playerInfo = stats.playersInfo.get(accountDBID,None)
-            if playerInfo is not None:
-                playerNameTF.htmlText = config('tab/playerName/right').format(**playerInfo)
-                vehicleNameTF.htmlText = config('tab/vehicleName/right').format(**playerInfo)
+                team = 'left' if value['team'] == BigWorld.player().team else 'right'
+                playerNameTF.htmlText = config('tab/playerName/' + team).format(**playerInfo)
+                vehicleNameTF.htmlText = config('tab/vehicleName/' + team).format(**playerInfo)
 
 
 def new_BattleEntry_beforeDelete(self):

@@ -1,6 +1,6 @@
 {
-	"Version": "2.1",
-	"VersionWOT": "0.9.15.1",
+	"Version": "2.1.1",
+	"VersionWOT": "0.9.15.1.1",
 	"files":
 	[
 		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle.py",

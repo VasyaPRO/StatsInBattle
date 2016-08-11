@@ -1,0 +1,442 @@
+diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm	2016-08-03 19:51:45.578788200 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm	2016-08-10 18:18:38.586639100 +0300
+@@ -147,6 +147,29 @@
+   trait slot QName(PackageNamespace(""), "rightVehicleInfos") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO.daapi"), "DAAPIVehicleInfoVO")>) end
+   trait slot QName(PackageNamespace(""), "userTags") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO.daapi"), "DAAPIVehicleUserTagsVO")>) end
+   trait slot QName(PackageNamespace(""), "vehicleStatus") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO"), "VehicleStatusLightVO")>) end
++  trait method QName(PackageNamespace(""),"getHolderByVehicleID")
++   method
++    refid "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats/getHolderByVehicleID"
++    param QName(PackageNamespace(""), "Number")
++    returns QName(PackageNamespace("net.wg.gui.battle.random.views.stats.components.fullStats.tableItem"), "StatsTableItemHolder")
++    body
++     maxstack 3
++     localcount 2
++     initscopedepth 16
++     maxscopedepth 17
++     code
++      getlocal0
++      pushscope
++
++      getlocal0
++      getproperty        QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats#0"), "_tableCtrl")
++      getlocal1
++      callproperty       QName(PackageNamespace(""),"getHolderByID"), 1
++      returnvalue
++     end ; code
++    end ; body
++   end ; method
++  end ; trait
+   trait method QName(PackageNamespace(""), "as_setIsIntaractive")
+    method
+     refid "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats/as_setIsIntaractive"
+diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm	2016-08-03 19:51:46.944150500 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm	2016-08-10 18:18:17.786157900 +0300
+@@ -96,7 +96,7 @@
+       getlocal0
+       getlocal3
+       getproperty         QName(PackageNamespace(""), "vehicleID")
+-      callproperty        QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID"), 1
++      callproperty        QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID"), 1
+       coerce              QName(PackageNamespace("net.wg.gui.battle.random.views.stats.components.fullStats.tableItem"), "StatsTableItemHolder")
+       dup
+       setlocal            4
+@@ -138,7 +138,7 @@
+       getlocal0
+       getlocal3
+       getproperty         QName(PackageNamespace(""), "vehicleID")
+-      callproperty        QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID"), 1
++      callproperty        QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID"), 1
+       coerce              QName(PackageNamespace("net.wg.gui.battle.random.views.stats.components.fullStats.tableItem"), "StatsTableItemHolder")
+       dup
+       setlocal            4
+@@ -356,7 +356,7 @@
+ 
+       getlocal0
+       getlocal1
+-      callproperty        QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID"), 1
++      callproperty        QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID"), 1
+       coerce              QName(PackageNamespace("net.wg.gui.battle.random.views.stats.components.fullStats.tableItem"), "StatsTableItemHolder")
+       setlocal3
+ 
+@@ -1223,7 +1223,7 @@
+     end ; body
+    end ; method
+   end ; trait
+-  trait method QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID")
++  trait method QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl#0"), "getHolderByID")
+    method
+     refid "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl/getHolderByID"
+     param QName(PackageNamespace(""), "Number")
+diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm	2016-08-03 19:51:45.801492000 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm	2016-08-10 18:29:07.989528900 +0300
+@@ -52,7 +52,7 @@
+       pushscope
+ 
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       getlocal1
+       callpropvoid        QName(PackageNamespace(""), "setFrags"), 1
+ 
+@@ -246,7 +246,7 @@
+       pushscope
+ 
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       getlocal1
+       callpropvoid        QName(PackageNamespace(""), "setIsSpeaking"), 1
+ 
+@@ -305,13 +305,13 @@
+       iffalse             L56
+ 
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       getlex              QName(ProtectedNamespace("net.wg.gui.battle.views.stats.fullStats:StatsTableItemHolderBase"), "getVehicleData")
+       getproperty         QName(PackageNamespace(""), "vehicleLevel")
+       callpropvoid        QName(PackageNamespace(""), "setVehicleLevel"), 1
+ 
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       getlex              QName(ProtectedNamespace("net.wg.gui.battle.views.stats.fullStats:StatsTableItemHolderBase"), "getVehicleData")
+       getproperty         QName(PackageNamespace(""), "vehicleIconName")
+       callpropvoid        QName(PackageNamespace(""), "setVehicleIcon"), 1
+@@ -335,14 +335,14 @@
+       iffalse             L36
+ 
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       callpropvoid        QName(PackageNamespace(""), "clearVehicleAction"), 0
+ 
+       jump                L43
+ 
+ L36:
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       getlex              QName(PackageNamespace("net.wg.gui.battle.random.views.stats.constants"), "VehicleActions")
+       getlex              QName(ProtectedNamespace("net.wg.gui.battle.views.stats.fullStats:StatsTableItemHolderBase"), "getVehicleData")
+       getproperty         QName(PackageNamespace(""), "vehicleAction")
+@@ -405,7 +405,7 @@
+       getlocal0
+       callsupervoid       QName(ProtectedNamespace("net.wg.gui.battle.views.stats.fullStats:StatsTableItemHolderBase"), "applyUserTags"), 0
+       getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++      getproperty         QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+       getlex              QName(PackageNamespace("net.wg.data.constants"), "UserTags")
+       getlocal1
+       callproperty        QName(PackageNamespace(""), "isMuted"), 1
+@@ -523,7 +523,7 @@
+     end ; body
+    end ; method
+   end ; trait
+-  trait getter QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
++  trait getter QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder"), "getStatsItem")
+    method
+     refid "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder/getStatsItem/getter"
+     returns QName(PackageNamespace("net.wg.gui.battle.random.views.stats.components.fullStats.tableItem"), "StatsTableItem")
+diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm	2016-08-03 19:51:46.952656800 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm	2016-08-09 23:29:52.028994700 +0300
+@@ -65,6 +65,52 @@
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_isInteractive") type QName(PackageNamespace(""), "Boolean") value False() end
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_isInviteShown") type QName(PackageNamespace(""), "Boolean") value False() end
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_isCursorVisible") type QName(PackageNamespace(""), "Boolean") value False() end
++  trait method QName(PackageNamespace(""), "getItemByIndex")
++   method
++    refid "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/instance/getItemByIndex"
++    param QName(PackageNamespace(""), "int")
++    body
++     maxstack 2
++     localcount 2
++     initscopedepth 9
++     maxscopedepth 10
++     code
++      getlocal0
++      pushscope
++
++      getlocal0
++      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/instance/getItemByIndex#0"), "_items")
++      getlocal1
++      getproperty         MultinameL([PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/instance/getItemByIndex#0"), PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/instance/getItemByIndex#1"), PackageNamespace(""), PackageNamespace("net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList"), PackageInternalNs("net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList"), Namespace("http://adobe.com/AS3/2006/builtin"), ProtectedNamespace("net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList"), StaticProtectedNs("net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList"), StaticProtectedNs("flash.display:Sprite"), StaticProtectedNs("flash.display:DisplayObjectContainer"), StaticProtectedNs("flash.display:InteractiveObject"), StaticProtectedNs("flash.display:DisplayObject"), StaticProtectedNs("flash.events:EventDispatcher")])
++      returnvalue
++     end ; code
++    end ; body
++   end ; method
++  end ; trait
++  
++  trait method QName(PackageNamespace(""), "getItemsLength")
++   method
++    refid "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/instance/getItemsLength"
++    returns QName(PackageNamespace(""),"int")
++    body
++     maxstack 2
++     localcount 2
++     initscopedepth 9
++     maxscopedepth 10
++     code
++      getlocal0
++      pushscope
++
++      getlocal0
++      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_items")
++      getproperty         QName(PackageNamespace(""), "length")
++      returnvalue
++     end ; code
++    end ; body
++   end ; method
++  end ; trait
++  
++  
+   trait getter QName(PackageNamespace(""), "state")
+    method
+     refid "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/state/getter"
+@@ -822,7 +868,7 @@
+     param QName(PackageNamespace(""), "uint")
+     returns QName(PackageNamespace(""), "void")
+     body
+-     maxstack 2
++     maxstack 3
+      localcount 4
+      initscopedepth 9
+      maxscopedepth 10
+@@ -843,6 +889,48 @@
+       getlocal2
+       callpropvoid        QName(Namespace("net.wg.gui.battle.random.views.stats.components.playersPanel.interfaces:IPlayersPanelListItemHolder"), "setVehicleStatus"), 1
+ 
++      getlocal2
++      pushbyte 2
++      ifne L12
++
++      getlocal3
++      getproperty         QName(PackageNamespace(""),"listItem")
++      getproperty         QName(PackageNamespace(""),"playerNameFullTF")
++      pushstring          "<font alpha=\'#80\'>"
++      getlocal3
++      getproperty         QName(PackageNamespace(""),"listItem")
++      getproperty         QName(PackageNamespace(""),"playerNameFullTF")
++      getproperty         QName(PackageNamespace(""),"htmlText")
++      add
++      pushstring          "</font>"
++      add
++      setproperty QName(PackageNamespace(""),"htmlText")
++
++      getlocal3
++      getproperty         QName(PackageNamespace(""),"listItem")
++      getproperty         QName(PackageNamespace(""),"playerNameCutTF")
++      pushstring          "<font alpha=\'#80\'>"
++      getlocal3
++      getproperty         QName(PackageNamespace(""),"listItem")
++      getproperty         QName(PackageNamespace(""),"playerNameCutTF")
++      getproperty         QName(PackageNamespace(""),"htmlText")
++      add
++      pushstring          "</font>"
++      add
++      setproperty QName(PackageNamespace(""),"htmlText")
++
++      getlocal3
++      getproperty         QName(PackageNamespace(""),"listItem")
++      getproperty         QName(PackageNamespace(""),"vehicleTF")
++      pushstring          "<font alpha=\'#80\'>"
++      getlocal3
++      getproperty         QName(PackageNamespace(""),"listItem")
++      getproperty         QName(PackageNamespace(""),"vehicleTF")
++      getproperty         QName(PackageNamespace(""),"htmlText")
++      add
++      pushstring          "</font>"
++      add
++      setproperty QName(PackageNamespace(""),"htmlText")
+ L12:
+       returnvoid
+      end ; code
+diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm	2016-08-03 19:51:47.140355800 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm	2016-08-10 00:02:18.710973100 +0300
+@@ -1364,7 +1364,7 @@
+       iftrue              L27
+ 
+       getlocal0
+-      callpropvoid        QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem"), "updatePositions"), 0
++      callpropvoid        QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem"), "updatePositions"), 0
+ 
+ L27:
+       findpropstrict      QName(ProtectedNamespace("net.wg.gui.battle.components:BattleUIComponent"), "isInvalid")
+@@ -1538,7 +1538,7 @@
+     end ; body
+    end ; method
+   end ; trait
+-  trait method QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem"), "updatePositions")
++  trait method QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem"), "updatePositions")
+    method
+     refid "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem/updatePositions"
+     returns QName(PackageNamespace(""), "void")
+@@ -2213,7 +2213,7 @@
+       initproperty        QName(PackageNamespace(""), "visible")
+ 
+       getlocal0
+-      callpropvoid        QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem"), "updatePositions"), 0
++      callpropvoid        QName(PackageNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelListItem"), "updatePositions"), 0
+ 
+ L153:
+       returnvoid
+@@ -2325,52 +2325,10 @@
+       getproperty         QName(PackageNamespace(""), "textColor")
+       getlocal2
+       getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      ifeq                L86
+-
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "fragsTF")
+-      getlocal2
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-L86:
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "playerNameFullTF")
+-      getproperty         QName(PackageNamespace(""), "textColor")
+-      getlocal2
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      ifeq                L97
+-
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "playerNameFullTF")
+-      getlocal2
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-L97:
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "playerNameCutTF")
+-      getproperty         QName(PackageNamespace(""), "textColor")
+-      getlocal2
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      ifeq                L108
+-
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "playerNameCutTF")
+-      getlocal2
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-L108:
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "vehicleTF")
+-      getproperty         QName(PackageNamespace(""), "textColor")
+-      getlocal2
+-      getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+       ifeq                L119
+ 
+       getlocal0
+-      getproperty         QName(PackageNamespace(""), "vehicleTF")
++      getproperty         QName(PackageNamespace(""), "fragsTF")
+       getlocal2
+       getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
+       setproperty         QName(PackageNamespace(""), "textColor")
+diff -Naur battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm battle-0/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm
+--- battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm	2016-08-03 19:51:45.644851000 +0300
++++ battle-0/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm	2016-08-10 18:41:30.630645200 +0300
+@@ -118,6 +118,46 @@
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_isSelected") type QName(PackageNamespace(""), "Boolean") value False() end
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_frags") type QName(PackageNamespace(""), "int") value Integer(0) end
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_isIGR") type QName(PackageNamespace(""), "Boolean") value False() end
++  trait getter QName(PackageNamespace(""),"playerNameTF")
++   method
++    refid "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase/playerNameTF/getter"
++    returns QName(PackageNamespace("flash.text"), "TextField")
++    body
++     maxstack 1
++     localcount 1
++     initscopedepth 5
++     maxscopedepth 6
++     code
++      getlocal0
++      pushscope
++
++      getlocal0
++      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_playerNameTF")
++      returnvalue
++     end ; code
++    end ; body
++   end ; method
++  end ; trait
++  trait getter QName(PackageNamespace(""),"vehicleNameTF")
++   method
++    refid "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase/vehicleNameTF/getter"
++    returns QName(PackageNamespace("flash.text"), "TextField")
++    body
++     maxstack 1
++     localcount 1
++     initscopedepth 5
++     maxscopedepth 6
++     code
++      getlocal0
++      pushscope
++
++      getlocal0
++      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_vehicleNameTF")
++      returnvalue
++     end ; code
++    end ; body
++   end ; method
++  end ; trait
+   trait method QName(PackageNamespace(""), "setPlayerName")
+    method
+     refid "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase/setPlayerName"
+@@ -754,14 +794,12 @@
+       pushtrue
+       setproperty         QName(PackageNamespace(""), "visible")
+ 
+-      getlex              QName(PackageNamespace(""), "App")
+-      getproperty         QName(PackageNamespace(""), "utils")
+-      getproperty         QName(Namespace("net.wg.utils:IUtils"), "commons")
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_playerNameTF")
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_userProps")
+-      callpropvoid        QName(Namespace("net.wg.utils:ICommons"), "formatPlayerName"), 2
++      getproperty         QName(PackageNamespace(""), "userName")
++      setproperty         QName(PackageNamespace(""), "htmlText")
+ 
+       jump                L69
+ 
+@@ -1025,29 +1063,14 @@
+     param QName(PackageNamespace(""), "uint")
+     returns QName(PackageNamespace(""), "void")
+     body
+-     maxstack 2
++     maxstack 1
+      localcount 2
+-     initscopedepth 5
+-     maxscopedepth 6
++     initscopedepth 9
++     maxscopedepth 10
+      code
+       getlocal0
+       pushscope
+ 
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_playerNameTF")
+-      getlocal1
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_vehicleNameTF")
+-      getlocal1
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_fragsTF")
+-      getlocal1
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+       returnvoid
+      end ; code
+     end ; body
