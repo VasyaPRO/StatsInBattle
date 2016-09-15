@@ -1,0 +1,81 @@
+diff -Naur battleVehicleMarkers-0.orig/net/wg/gui/battle/views/vehicleMarkers/VehicleMarker.class.asasm battleVehicleMarkers-0/net/wg/gui/battle/views/vehicleMarkers/VehicleMarker.class.asasm
+--- battleVehicleMarkers-0.orig/net/wg/gui/battle/views/vehicleMarkers/VehicleMarker.class.asasm	2016-09-15 17:51:27.130190100 +0300
++++ battleVehicleMarkers-0/net/wg/gui/battle/views/vehicleMarkers/VehicleMarker.class.asasm	2016-09-15 17:45:05.471253300 +0300
+@@ -1116,7 +1116,7 @@
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.vehicleMarkers:VehicleMarker#0"), "_model")
+       getproperty         QName(PackageNamespace(""), "pName")
+-      setproperty         QName(PackageNamespace(""), "text")
++      setproperty         QName(PackageNamespace(""), "htmlText")
+ 
+       getlocal0
+       getproperty         QName(PackageNamespace(""), "vehicleNameField")
+@@ -1128,7 +1128,7 @@
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.vehicleMarkers:VehicleMarker#0"), "_model")
+       getproperty         QName(PackageNamespace(""), "vType")
+-      setproperty         QName(PackageNamespace(""), "text")
++      setproperty         QName(PackageNamespace(""), "htmlText")
+ 
+       getlocal            5
+       iffalse             L65
+@@ -1161,6 +1161,28 @@
+       iffalse             L82
+ 
+       getlocal0
++      getproperty         QName(PackageNamespace(""),"playerNameField")
++      pushstring          "<font alpha='#80'>"
++      getlocal0
++      getproperty         QName(PackageNamespace(""),"playerNameField")
++      getproperty         QName(PackageNamespace(""),"htmlText")
++      add
++      pushstring          "</font>"
++      add
++      setproperty         QName(PackageNamespace(""),"htmlText")
++
++      getlocal0
++      getproperty         QName(PackageNamespace(""),"vehicleNameField")
++      pushstring          "<font alpha='#80'>"
++      getlocal0
++      getproperty         QName(PackageNamespace(""),"vehicleNameField")
++      getproperty         QName(PackageNamespace(""),"htmlText")
++      add
++      pushstring          "</font>"
++      add
++      setproperty         QName(PackageNamespace(""),"htmlText")
++
++      getlocal0
+       callpropvoid        QName(ProtectedNamespace("net.wg.gui.battle.views.vehicleMarkers:VehicleMarker"), "setDestroyedColorForHP"), 0
+ 
+ L82:
+@@ -1782,30 +1804,6 @@
+ 
+ L31:
+       getlocal0
+-      getproperty         QName(ProtectedNamespace("net.wg.gui.battle.views.vehicleMarkers:VehicleMarker"), "_vmManager")
+-      getlocal0
+-      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.vehicleMarkers:VehicleMarker#0"), "_colorSchemeName")
+-      callproperty        QName(PackageNamespace(""), "getRGB"), 1
+-      convert_u
+-      setlocal2
+-
+-      findpropstrict      QName(PackageNamespace(""), "isNaN")
+-      getlocal2
+-      callproperty        QName(PackageNamespace(""), "isNaN"), 1
+-      iftrue              L50
+-
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "playerNameField")
+-      getlocal2
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-      getlocal0
+-      getproperty         QName(PackageNamespace(""), "vehicleNameField")
+-      getlocal2
+-      setproperty         QName(PackageNamespace(""), "textColor")
+-
+-L50:
+-      getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.vehicleMarkers:VehicleMarker#0"), "_markerState")
+       pushstring          ""
+       ifeq                L84

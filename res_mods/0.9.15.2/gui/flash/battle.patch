@@ -1,10 +1,10 @@
 diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm
---- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm	2016-08-03 19:51:45.578788200 +0300
-+++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm	2016-08-10 18:18:38.586639100 +0300
-@@ -147,6 +147,29 @@
-   trait slot QName(PackageNamespace(""), "rightVehicleInfos") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO.daapi"), "DAAPIVehicleInfoVO")>) end
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm	2016-09-15 17:49:22.025355300 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStats.class.asasm	2016-09-15 16:27:13.031432400 +0300
+@@ -155,6 +155,29 @@
    trait slot QName(PackageNamespace(""), "userTags") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO.daapi"), "DAAPIVehicleUserTagsVO")>) end
-   trait slot QName(PackageNamespace(""), "vehicleStatus") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO"), "VehicleStatusLightVO")>) end
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats#0"), "_vehicleStatus") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace("net.wg.data.VO"), "VehicleStatusLightVO")>) end
+   trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats#0"), "_vehiclesWithNesStatus") type TypeName(QName(PackageNamespace("__AS3__.vec"), "Vector")<QName(PackageNamespace(""), "Number")>) end
 +  trait method QName(PackageNamespace(""),"getHolderByVehicleID")
 +   method
 +    refid "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats/getHolderByVehicleID"
@@ -32,8 +32,8 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullSta
     method
      refid "net.wg.gui.battle.random.views.stats.components.fullStats:FullStats/as_setIsIntaractive"
 diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm
---- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm	2016-08-03 19:51:46.944150500 +0300
-+++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm	2016-08-10 18:18:17.786157900 +0300
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm	2016-09-15 17:49:24.006262000 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/FullStatsTableCtrl.class.asasm	2016-09-15 16:30:10.429154800 +0300
 @@ -96,7 +96,7 @@
        getlocal0
        getlocal3
@@ -71,8 +71,8 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullSta
      refid "net.wg.gui.battle.random.views.stats.components.fullStats:FullStatsTableCtrl/getHolderByID"
      param QName(PackageNamespace(""), "Number")
 diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm
---- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm	2016-08-03 19:51:45.801492000 +0300
-+++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm	2016-08-10 18:29:07.989528900 +0300
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm	2016-09-15 17:49:22.721849800 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/fullStats/tableItem/StatsTableItemHolder.class.asasm	2016-09-15 16:32:22.080039800 +0300
 @@ -52,7 +52,7 @@
        pushscope
  
@@ -143,9 +143,9 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/fullSta
      refid "net.wg.gui.battle.random.views.stats.components.fullStats.tableItem:StatsTableItemHolder/getStatsItem/getter"
      returns QName(PackageNamespace("net.wg.gui.battle.random.views.stats.components.fullStats.tableItem"), "StatsTableItem")
 diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm
---- battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm	2016-08-03 19:51:46.952656800 +0300
-+++ battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm	2016-08-09 23:29:52.028994700 +0300
-@@ -65,6 +65,52 @@
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm	2016-09-15 17:49:24.018770200 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelList.class.asasm	2016-09-15 16:38:58.679237300 +0300
+@@ -65,6 +65,50 @@
    trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_isInteractive") type QName(PackageNamespace(""), "Boolean") value False() end
    trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_isInviteShown") type QName(PackageNamespace(""), "Boolean") value False() end
    trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList#0"), "_isCursorVisible") type QName(PackageNamespace(""), "Boolean") value False() end
@@ -193,12 +193,10 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/players
 +    end ; body
 +   end ; method
 +  end ; trait
-+  
-+  
    trait getter QName(PackageNamespace(""), "state")
     method
      refid "net.wg.gui.battle.random.views.stats.components.playersPanel.list:PlayersPanelList/state/getter"
-@@ -822,7 +868,7 @@
+@@ -822,7 +866,7 @@
      param QName(PackageNamespace(""), "uint")
      returns QName(PackageNamespace(""), "void")
      body
@@ -207,14 +205,15 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/players
       localcount 4
       initscopedepth 9
       maxscopedepth 10
-@@ -843,6 +889,48 @@
+@@ -842,7 +886,49 @@
+       getlocal3
        getlocal2
        callpropvoid        QName(Namespace("net.wg.gui.battle.random.views.stats.components.playersPanel.interfaces:IPlayersPanelListItemHolder"), "setVehicleStatus"), 1
- 
++      
 +      getlocal2
 +      pushbyte 2
 +      ifne L12
-+
+ 
 +      getlocal3
 +      getproperty         QName(PackageNamespace(""),"listItem")
 +      getproperty         QName(PackageNamespace(""),"playerNameFullTF")
@@ -257,8 +256,8 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/players
        returnvoid
       end ; code
 diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm
---- battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm	2016-08-03 19:51:47.140355800 +0300
-+++ battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm	2016-08-10 00:02:18.710973100 +0300
+--- battle-0.orig/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm	2016-09-15 17:49:24.593178500 +0300
++++ battle-0/net/wg/gui/battle/random/views/stats/components/playersPanel/list/PlayersPanelListItem.class.asasm	2016-09-15 16:44:15.445555800 +0300
 @@ -1364,7 +1364,7 @@
        iftrue              L27
  
@@ -341,8 +340,8 @@ diff -Naur battle-0.orig/net/wg/gui/battle/random/views/stats/components/players
        getproperty         QName(Namespace("net.wg.infrastructure.interfaces:IColorScheme"), "rgb")
        setproperty         QName(PackageNamespace(""), "textColor")
 diff -Naur battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm battle-0/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm
---- battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm	2016-08-03 19:51:45.644851000 +0300
-+++ battle-0/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm	2016-08-10 18:41:30.630645200 +0300
+--- battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm	2016-09-15 17:49:22.136433200 +0300
++++ battle-0/net/wg/gui/battle/views/stats/fullStats/StatsTableItemBase.class.asasm	2016-09-15 16:51:36.644750800 +0300
 @@ -118,6 +118,46 @@
    trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_isSelected") type QName(PackageNamespace(""), "Boolean") value False() end
    trait slot QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_frags") type QName(PackageNamespace(""), "int") value Integer(0) end
@@ -407,7 +406,25 @@ diff -Naur battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemB
  
        jump                L69
  
-@@ -1025,29 +1063,14 @@
+@@ -838,10 +876,17 @@
+ 
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_vehicleNameTF")
++      getproperty         QName(PackageNamespace(""), "htmlText");
++      not
++      iffalse             L129
++
++      getlocal0
++      getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_vehicleNameTF")
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_vehicleName")
+       setproperty         QName(PackageNamespace(""), "text")
+ 
++L129:
+       getlocal0
+       getproperty         QName(PrivateNamespace(null, "net.wg.gui.battle.views.stats.fullStats:StatsTableItemBase"), "_icoIGR")
+       getproperty         QName(PackageNamespace(""), "visible")
+@@ -1025,29 +1070,14 @@
      param QName(PackageNamespace(""), "uint")
      returns QName(PackageNamespace(""), "void")
      body
@@ -440,3 +457,149 @@ diff -Naur battle-0.orig/net/wg/gui/battle/views/stats/fullStats/StatsTableItemB
        returnvoid
       end ; code
      end ; body
+diff -Naur battle-0.orig/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#0.method.asasm battle-0/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#0.method.asasm
+--- battle-0.orig/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#0.method.asasm	2016-09-15 17:49:29.173430100 +0300
++++ battle-0/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#0.method.asasm	2016-09-15 16:22:16.098333500 +0300
+@@ -8,20 +8,51 @@
+   initscopedepth 19
+   maxscopedepth 19
+   code
++   findpropstrict      QName(ProtectedNamespace("net.wg.infrastructure.base:AbstractView"), "assertLifeCycle")
++   callpropvoid        QName(ProtectedNamespace("net.wg.infrastructure.base:AbstractView"), "assertLifeCycle"), 0
++
++   getlex              QName(PackageNamespace(""), "stage")
++   getlex              QName(PackageNamespace("flash.events"), "MouseEvent")
++   getproperty         QName(PackageNamespace(""), "MOUSE_UP")
++   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseReleaseOutsideLclHdr")
++   callpropvoid        QName(PackageNamespace(""), "removeEventListener"), 2
++
+    getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
+-   getlex              QName(PackageNamespace("net.wg.gui.components.common.cursor.base"), "BaseInfo")
+-   getproperty         QName(PackageNamespace(""), "STATE_NONE")
+-   setproperty         QName(PackageNamespace(""), "state")
++   getproperty         QName(PackageNamespace(""), "hit")
++   getlex              QName(PackageNamespace("flash.events"), "MouseEvent")
++   getproperty         QName(PackageNamespace(""), "MOUSE_UP")
++   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseUpLclHdr")
++   callpropvoid        QName(PackageNamespace(""), "removeEventListener"), 2
++
++   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
++   getproperty         QName(PackageNamespace(""), "hit")
++   getlex              QName(PackageNamespace("flash.events"), "MouseEvent")
++   getproperty         QName(PackageNamespace(""), "MOUSE_MOVE")
++   getlex              QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "draggingHandler")
++   callpropvoid        QName(PackageNamespace(""), "removeEventListener"), 2
++
++   getlex              QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "_isOnDragging")
++   iffalse             L28
++
++   findpropstrict      QName(ProtectedNamespace("net.wg.gui.components.common.cursor.base:BaseCursor"), "forceSetCursor")
++   getlex              QName(PackageNamespace("net.wg.data.constants"), "Cursors")
++   getproperty         QName(PackageNamespace(""), "DRAG_OPEN")
++   callpropvoid        QName(ProtectedNamespace("net.wg.gui.components.common.cursor.base:BaseCursor"), "forceSetCursor"), 1
+ 
+    findpropstrict      QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging")
+    pushfalse
+-   pushtrue
+-   callpropvoid        QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging"), 2
++   callpropvoid        QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging"), 1
++
++L28:
++   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
++   getproperty         QName(PackageNamespace(""), "container")
++   callpropvoid        QName(Namespace("net.wg.infrastructure.interfaces.entity:IDraggable"), "onEndDrag"), 0
++
++   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
++   getlex              QName(PackageNamespace("net.wg.gui.components.common.cursor.base"), "BaseInfo")
++   getproperty         QName(PackageNamespace(""), "STATE_NONE")
++   setproperty         QName(PackageNamespace(""), "state")
+ 
+-   findpropstrict      QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseUpLclHdr")
+-   getlocal1
+-   callproplex         QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseUpLclHdr"), 1
+-   pop
+    returnvoid
+   end ; code
+  end ; body
+diff -Naur battle-0.orig/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#1.method.asasm battle-0/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#1.method.asasm
+--- battle-0.orig/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#1.method.asasm	2016-09-15 17:49:29.171428700 +0300
++++ battle-0/net/wg/gui/components/common/cursor/Cursor/mouseDnDragHandler/inline_method#1.method.asasm	2016-09-15 16:22:16.133478700 +0300
+@@ -8,51 +8,20 @@
+   initscopedepth 19
+   maxscopedepth 19
+   code
+-   findpropstrict      QName(ProtectedNamespace("net.wg.infrastructure.base:AbstractView"), "assertLifeCycle")
+-   callpropvoid        QName(ProtectedNamespace("net.wg.infrastructure.base:AbstractView"), "assertLifeCycle"), 0
+-
+-   getlex              QName(PackageNamespace(""), "stage")
+-   getlex              QName(PackageNamespace("flash.events"), "MouseEvent")
+-   getproperty         QName(PackageNamespace(""), "MOUSE_UP")
+-   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseReleaseOutsideLclHdr")
+-   callpropvoid        QName(PackageNamespace(""), "removeEventListener"), 2
+-
+-   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
+-   getproperty         QName(PackageNamespace(""), "hit")
+-   getlex              QName(PackageNamespace("flash.events"), "MouseEvent")
+-   getproperty         QName(PackageNamespace(""), "MOUSE_UP")
+-   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseUpLclHdr")
+-   callpropvoid        QName(PackageNamespace(""), "removeEventListener"), 2
+-
+-   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
+-   getproperty         QName(PackageNamespace(""), "hit")
+-   getlex              QName(PackageNamespace("flash.events"), "MouseEvent")
+-   getproperty         QName(PackageNamespace(""), "MOUSE_MOVE")
+-   getlex              QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "draggingHandler")
+-   callpropvoid        QName(PackageNamespace(""), "removeEventListener"), 2
+-
+-   getlex              QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "_isOnDragging")
+-   iffalse             L28
+-
+-   findpropstrict      QName(ProtectedNamespace("net.wg.gui.components.common.cursor.base:BaseCursor"), "forceSetCursor")
+-   getlex              QName(PackageNamespace("net.wg.data.constants"), "Cursors")
+-   getproperty         QName(PackageNamespace(""), "DRAG_OPEN")
+-   callpropvoid        QName(ProtectedNamespace("net.wg.gui.components.common.cursor.base:BaseCursor"), "forceSetCursor"), 1
+-
+-   findpropstrict      QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging")
+-   pushfalse
+-   callpropvoid        QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging"), 1
+-
+-L28:
+-   getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
+-   getproperty         QName(PackageNamespace(""), "container")
+-   callpropvoid        QName(Namespace("net.wg.infrastructure.interfaces.entity:IDraggable"), "onEndDrag"), 0
+-
+    getlex              QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "dragInfo")
+    getlex              QName(PackageNamespace("net.wg.gui.components.common.cursor.base"), "BaseInfo")
+    getproperty         QName(PackageNamespace(""), "STATE_NONE")
+    setproperty         QName(PackageNamespace(""), "state")
+ 
++   findpropstrict      QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging")
++   pushfalse
++   pushtrue
++   callpropvoid        QName(PrivateNamespace(null, "net.wg.gui.components.common.cursor:Cursor#1"), "setDragging"), 2
++
++   findpropstrict      QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseUpLclHdr")
++   getlocal1
++   callproplex         QName(PackageInternalNs("net.wg.gui.components.common.cursor"), "mouseUpLclHdr"), 1
++   pop
+    returnvoid
+   end ; code
+  end ; body
+diff -Naur battle-0.orig/net/wg/gui/components/common/cursor/Cursor.class.asasm battle-0/net/wg/gui/components/common/cursor/Cursor.class.asasm
+--- battle-0.orig/net/wg/gui/components/common/cursor/Cursor.class.asasm	2016-09-15 17:49:19.806779600 +0300
++++ battle-0/net/wg/gui/components/common/cursor/Cursor.class.asasm	2016-09-15 16:22:05.741750700 +0300
+@@ -922,12 +922,12 @@
+       iffalse             L87
+ 
+       getscopeobject      1
+-      newfunction         "net.wg.gui.components.common.cursor:Cursor/mouseDnDragHandler/inline_method#1"
++      newfunction         "net.wg.gui.components.common.cursor:Cursor/mouseDnDragHandler/inline_method#0"
+       coerce              QName(PackageNamespace(""), "Function")
+       setslot             3
+ 
+       getscopeobject      1
+-      newfunction         "net.wg.gui.components.common.cursor:Cursor/mouseDnDragHandler/inline_method#0"
++      newfunction         "net.wg.gui.components.common.cursor:Cursor/mouseDnDragHandler/inline_method#1"
+       coerce              QName(PackageNamespace(""), "Function")
+       setslot             4
+ 

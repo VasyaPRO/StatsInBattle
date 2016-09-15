@@ -1,6 +1,6 @@
 diff -Naur lobby-0.orig/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm lobby-0/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm
---- lobby-0.orig/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm	2016-08-03 19:53:35.804259000 +0300
-+++ lobby-0/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm	2016-08-03 23:53:08.168536900 +0300
+--- lobby-0.orig/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm	2016-09-15 17:50:35.339208500 +0300
++++ lobby-0/net/wg/gui/lobby/battleloading/PlayerItemRenderer.class.asasm	2016-09-15 17:02:18.551244300 +0300
 @@ -423,27 +423,11 @@
        pushtrue
        setproperty         QName(PackageNamespace(""), "visible")

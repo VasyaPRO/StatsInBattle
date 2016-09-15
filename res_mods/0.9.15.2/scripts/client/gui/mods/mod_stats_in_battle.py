@@ -25,13 +25,11 @@ from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from items.vehicles import VEHICLE_CLASS_TAGS
 from ClientArena import ClientArena
 from gui.Scaleform.framework import ViewTypes
-from helpers import getClientVersion
 from gui.Scaleform.daapi.view.battle.shared.stats_exchage.stats_ctrl import BattleStatisticsDataController
 from gui.Scaleform.daapi.view.battle.shared.markers2d.plugins import VehicleMarkerPlugin, VehicleMarker
+from ResMgr import openSection
 
-
-CLIENT_VERSION = getClientVersion().split(' ')[0].replace('v.', '')
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 __author__ = 'VasyaPRO_2014'
 
 print '[LOAD_MOD] StatsInBattle v%s' % __version__
@@ -91,6 +89,7 @@ class Config:
             cfg['colors']['codes']
             cfg['colors']['EFF']
             cfg['colors']['WGR']
+            cfg['colors']['WN8']
             cfg['colors']['WN7']
             cfg['colors']['WN6']
             cfg['colors']['winrate']
@@ -167,13 +166,13 @@ class Config:
             'playersPanel': {
                 'enable':True,
                 'playerNameFull': {
-                    'left': '<font color="#{colorEFF}">{xeff:<2}</font> {nick}',
-                    'right': '{nick} <font color="#{colorEFF}">{xeff:2}</font>',
+                    'left': '<font color="#{colorWN8}">{xwn8:<2}</font> {nick}',
+                    'right': '{nick} <font color="#{colorWN8}">{xwn8:2}</font>',
                     'width' : 0
                 },
                 'playerNameCut': {
-                    'left': '<font color="#{colorEFF}">{xeff:<2}</font> {nick}',
-                    'right': '{nick:.18} <font color="#{colorEFF}">{xeff:<2}</font>',
+                    'left': '<font color="#{colorWN8}">{xwn8:<2}</font> {nick}',
+                    'right': '{nick:.18} <font color="#{colorWN8}">{xwn8:<2}</font>',
                     'width': 140
                 },
                 'vehicleName': {
@@ -187,36 +186,37 @@ class Config:
             'tab': {
                 'enable': True,
                 'playerName': {
-                    'left': '{spg_percent:<5.2f} <img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{nick}</font>',
-                    'right': '<font color="#{colorEFF}">{nick:.16}</font> <img src="{flag_url}" width="16" height="12"> {spg_percent:5.2f}',
+                    'left': '{spg_percent:<5.2f} <img src="{flag_url}" width="16" height="12"> <font color="#{colorWN8}">{nick}</font>',
+                    'right': '<font color="#{colorWN8}">{nick:.16}</font> <img src="{flag_url}" width="16" height="12"> {spg_percent:5.2f}',
                     'width': 180
                 },
                 'vehicleName': {
-                    'left': '<font color="#{colorTBattles}">{t_kb:2}</font> <font color="#{colorBattles}">{kb:3}</font> <font color="#{colorWinrate}">{winrate:2.0f}%</font> <font color="#{colorEFF}">{eff:4}</font>',
-                    'right': '<font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:<2.0f}%</font> <font color="#{colorBattles}">{kb:<3}</font> <font color="#{colorTBattles}">{t_kb:<2}</font>',
+                    'left': '<font color="#{colorTBattles}">{t_kb:2}</font> <font color="#{colorBattles}">{kb:3}</font> <font color="#{colorWinrate}">{winrate:2.0f}%</font> <font color="#{colorWN8}">{wn8:4}</font>',
+                    'right': '<font color="#{colorWN8}">{wn8:<4}</font> <font color="#{colorWinrate}">{winrate:<2.0f}%</font> <font color="#{colorBattles}">{kb:<3}</font> <font color="#{colorTBattles}">{t_kb:<2}</font>',
                     'width': 100
                 }
             },
             'battleLoading': {
                 'enable': True,
                 'playerName': {
-                    'left': '<img src="{flag_url}" width="16" height="12"> <font color="#{colorEFF}">{nick}</font>',
-                    'right': '<font color="#{colorEFF}">{nick:.16}</font> <img src="{flag_url}" width="16" height="12">'
+                    'left': '<img src="{flag_url}" width="16" height="12"> <font color="#{colorWN8}">{nick}</font>',
+                    'right': '<font color="#{colorWN8}">{nick:.16}</font> <img src="{flag_url}" width="16" height="12">'
                 },
                 'vehicleName': {
-                    'left': '<font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorEFF}">{eff:4}</font>',
-                    'right': '<font color="#{colorEFF}">{eff:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font>'
+                    'left': '<font color="#{colorBattles}">{kb}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorWN8}">{wn8:4}</font>',
+                    'right': '<font color="#{colorWN8}">{wn8:<4}</font> <font color="#{colorWinrate}">{winrate:0.0f}%</font> <font color="#{colorBattles}">{kb}</font>'
                 },
             },
             'marker': {
                 'enable': True,
-                'playerName': '{eff} {nick}',
-                'vehicleName': '{winrate:.0f}% {vehicle}'
+                'playerName': '<font color="#{colorWN8}">{wn8}</font> {nick}',
+                'vehicleName': '<font color="#{colorWinrate}">{winrate:.0f}%</font> {vehicle}'
             },
             'colors': {
                 'codes': ['FE0E00', 'FE7903', 'F8F400', '60FF00', '02C9B3', 'D042F3'],
                 'EFF': [1, 615, 870, 1175, 1525, 1850],
                 'WGR': [1, 2495, 4345, 6425, 8625, 10040],
+                'WN8': [1, 400, 900, 1470, 2180, 2880],
                 'WN7': [1, 495, 860, 1220, 1620, 1965],
                 'WN6': [1, 460, 850, 1215, 1620, 1960],
                 'winrate': [1, 47, 49, 52.5, 58, 65],
@@ -229,7 +229,9 @@ class Config:
 class Statistics:
     def __init__(self):
         self._vehiclesInfo = None
+        self._WN8expected = None
         self.loadVehiclesInfo()
+        self.loadWN8expected()
         self.playersInfo = {}
         self.dbIDs = []
         self._account_info = None
@@ -309,19 +311,31 @@ class Statistics:
                                             description += ' (%s, level %d, type %s, nation %s)' % (value['vehicleType'].type.userString, self.playersInfo[dbID]['level'], self.playersInfo[dbID]['type'], self.playersInfo[dbID]['nation'])
                                         ga.send_exception(description)
                                 avgTier = float(player_tier_temp) / self._account_info[dbID]['statistics']['all']['battles']
-                                self.playersInfo[dbID]['eff'] = self.getEFF(avgDmg, avgTier, avgFrags, avgSpot, avgCap, avgDef)
-                                self.playersInfo[dbID]['wn7'] = self.getWN7(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate, battles)
-                                self.playersInfo[dbID]['wn6'] = self.getWN6(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate)
-                                self.playersInfo[dbID]['xeff'] = self.getXEFF(self.playersInfo[dbID]['eff'])
-                                self.playersInfo[dbID]['xwn6'] = self.getXWN6(self.playersInfo[dbID]['wn6'])
+                                if avgTier > 0:
+                                    self.playersInfo[dbID]['eff'] = self.getEFF(avgDmg, avgTier, avgFrags, avgSpot, avgCap, avgDef)
+                                    self.playersInfo[dbID]['wn7'] = self.getWN7(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate, battles)
+                                    self.playersInfo[dbID]['wn6'] = self.getWN6(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate)
+                                    self.playersInfo[dbID]['xeff'] = self.getXEFF(self.playersInfo[dbID]['eff'])
+                                    self.playersInfo[dbID]['xwn6'] = self.getXWN6(self.playersInfo[dbID]['wn6'])
+                                else:
+                                    self.playersInfo[dbID]['eff'] = 0
+                                    self.playersInfo[dbID]['wn7'] = 0
+                                    self.playersInfo[dbID]['wn6'] = 0
+                                    self.playersInfo[dbID]['xeff'] = 0
+                                    self.playersInfo[dbID]['xwn6'] = 0
+                                self.playersInfo[dbID]['wn8'] = self.getWN8(dbID, winrate, avgDmg, avgFrags, avgSpot, avgDef)
+                                self.playersInfo[dbID]['xwn8'] = self.getXWN8(self.playersInfo[dbID]['wn8'])
                                 self.playersInfo[dbID]['spg_percent'] = float(self.playersInfo[dbID]['spg_battles']) / battles * 100.0
                             else:
                                 self.playersInfo[dbID]['eff'] = 0
+                                self.playersInfo[dbID]['wn8'] = 0
                                 self.playersInfo[dbID]['wn7'] = 0
                                 self.playersInfo[dbID]['wn6'] = 0
                                 self.playersInfo[dbID]['xeff'] = 0
                                 self.playersInfo[dbID]['xwn6'] = 0
+                                self.playersInfo[dbID]['xwn8'] = 0
                             self.playersInfo[dbID]['colorEFF'] = self.getColor('EFF', self.playersInfo[dbID]['eff'])
+                            self.playersInfo[dbID]['colorWN8'] = self.getColor('WN8', self.playersInfo[dbID]['wn8'])
                             self.playersInfo[dbID]['colorWN7'] = self.getColor('WN7', self.playersInfo[dbID]['wn7'])
                             self.playersInfo[dbID]['colorWN6'] = self.getColor('WN6', self.playersInfo[dbID]['wn6'])
                             self.playersInfo[dbID]['colorTBattles'] = self.getColor('t_battles', self.playersInfo[dbID]['t_battles'])
@@ -340,6 +354,33 @@ class Statistics:
     def getWN7(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate, total):
         return int(round((1240 - 1040 / (min(avgTier, 6) ** 0.164)) * avgFrags + avgDmg * 530 / (184 * math.exp(0.24 * avgTier) + 130) + avgSpot * 125 * min(avgTier, 3) / 3 + min(avgDef, 2.2) * 100 + ((185 / (0.17 + math.exp(((winrate) - 35) * -0.134))) - 500) * 0.45 + (-1 * (((5 - min(avgTier, 5)) * 125) / (1 + math.exp((avgTier - (total / 220 ** (3 / avgTier))) * 1.5))))))
 
+    def getWN8(self, dbID, winrate, avgDmg, avgFrags, avgSpot, avgDef):
+        if self._WN8expected is None:
+            return 0 
+        eFrags = 0
+        eDmg = 0
+        eSpot = 0
+        eDef = 0
+        eWinrate = 0
+        eBattles = 0
+        for i in range(len(self._account_tanks[dbID])):
+            tBattles  = self._account_tanks[dbID][i]['statistics']['battles']
+            tank_id = self._account_tanks[dbID][i]['tank_id']
+            for j in self._WN8expected:
+                if j['IDNum'] == tank_id:
+                    eFrags += tBattles * j['expFrag']
+                    eDmg += tBattles * j['expDamage']
+                    eSpot += tBattles * j['expSpot']
+                    eDef += tBattles * j['expDef']
+                    eWinrate += tBattles * j['expWinRate']
+                    eBattles += tBattles
+        rWin  = max(((winrate * eBattles / eWinrate - 0.71) / (1 - 0.71)), 0)
+        rDmg  = max(((avgDmg * eBattles / eDmg - 0.22) / (1 - 0.22)), 0)
+        rFrag = max(min(rDmg + 0.2, ((avgFrags * eBattles / eFrags - 0.12) / (1 - 0.12))), 0)
+        rSpot = max(min(rDmg + 0.1, ((avgSpot * eBattles / eSpot - 0.38) / (1 - 0.38))), 0)
+        rDef  = max(min(rDmg + 0.1, ((avgDef * eBattles / eDef - 0.10) / (1 - 0.10))), 0)
+        return int(round(980 * rDmg + 210 * rDmg * rFrag + 155 * rFrag * rSpot + 75 * rDef * rFrag + 145 * min(1.8, rWin)))
+
     @staticmethod
     def getWN6(avgDmg, avgTier, avgFrags, avgSpot, avgDef, winrate):
         return int(round((1240 - 1040 / (min(avgTier, 6)) ** 0.164) * avgFrags + avgDmg * 530 / (184 * math.exp(0.24 * avgTier) + 130) + avgSpot * 125 + min(avgDef, 2.2) * 100 + ((185 / (0.17 + math.exp((winrate - 35) * -0.134))) - 500) * 0.45 + (6 - min(avgTier, 6)) * -60))
@@ -347,6 +388,10 @@ class Statistics:
     @staticmethod
     def getXEFF(eff):
         return 'XX' if eff > 2300 else int(round(max(0, min(100, eff*(eff*(eff*(eff*(eff*(eff* 0.000000000000000006449 - 0.00000000000004089) + 0.00000000008302) - 0.00000004433) - 0.0000482) + 0.1257) - 40.42))))
+
+    @staticmethod
+    def getXWN8(wn8):
+        return 'XX' if wn8 > 3800 else int(round(max(0, min(100,wn8*(wn8*(wn8*(wn8*(wn8*(-wn8*0.00000000000000000009762 + 0.0000000000000016221) - 0.00000000001007) + 0.000000027916) - 0.000036982) + 0.05577) - 1.3))))
 
     @staticmethod
     def getXWN6(wn6):
@@ -360,20 +405,27 @@ class Statistics:
         if self._vehiclesInfo is None:
             #startTime = time.time()
             url = 'https://raw.githubusercontent.com/VasyaPRO/StatsInBattle/master/vehicles_info.json'
+            res_mods_path = openSection('../paths.xml')['Paths'].values()[0].asString
             try:
                 self._vehiclesInfo = json.load(urllib2.urlopen(url))
                 #print 'vehicles info loaded [%s sec]' % str(time.time() - startTime)
             except IOError:
                 showMessage('[StatsInBattle] Error loading vehicles.', 'red')
                 try:
-                    with open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'r') as file:
+                    with open('%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % res_mods_path, 'r') as file:
                         self._vehiclesInfo = json.load(file)
                 except:
                     pass
             else:
-                with open('res_mods/%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % CLIENT_VERSION, 'w') as file:
+                with open('%s/scripts/client/gui/mods/mod_stats_in_battle/vehicles_info.json' % res_mods_path, 'w') as file:
                     json.dump(self._vehiclesInfo, file)
-
+    def loadWN8expected(self):
+        if self._WN8expected is None:
+            url = 'http://www.wnefficiency.net/exp/expected_tank_values_latest.json'
+            try:
+                self._WN8expected = json.load(urllib2.urlopen(url)).get('data')
+            except IOError:
+                showMessage('[StatsInBattle] Error loading WN8 expected tank values.', 'red')
 
     def getColor(self, rating, value):
         color = 'FFFFFF'

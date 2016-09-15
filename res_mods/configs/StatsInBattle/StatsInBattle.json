@@ -1,8 +1,8 @@
 /*
 Информация:
 	Статистика игроков в бою
-	Версия: 2.1.1
-	Версия клиента игры: 0.9.15.1.1
+	Версия: 2.1.2
+	Версия клиента игры: 0.9.15.2
 	Автор: VasyaPRO_2014
 	Спасибо Monstrofil и BirrettaMalefica (Евросервер)
 
@@ -10,9 +10,11 @@
 	Макросы статистики:
 		{wgr} - рейтинг WGR (ЛРИ)
 		{eff} - рейтинг EFF (РЭ)
+        {wn8} - рейтинг WN8
 		{wn7} - рейтинг WN7
 		{wn6} - рейтинг WN6
 		{xeff} - рейтинг EFF в шкале XVM (0-99, XX для топовых показателей)
+        {xwn8} - рейтинг WN8 в шкале XVM (0-99, XX для топовых показателей)
 		{xwn6} - рейтинг WN6 в шкале XVM (0-99, XX для топовых показателей)
 		{xwgr} - рейтинг WGR в шкале XVM (0-99, XX для топовых показателей)
 		{winrate} - процент побед, для отображения N чисел после запятой используйте {winrate:0.Nf}, например {winrate:0.2f} - два знака после запятой
@@ -23,6 +25,7 @@
 	Динамические цвета (настраиваются в конце конфига):
 		{colorWGR} - динамический цвет по рейтингу WGR
 		{colorEFF} - динамический цвет по рейтингу EFF
+        {colorWN8} - динамический цвет по рейтингу WN8
 		{colorWN7} - динамический цвет по рейтингу WN7
 		{colorWN6} - динамический цвет по рейтингу WN6
 		{colorWinrate} - динамический цвет по проценту побед
@@ -65,20 +68,20 @@
 		"enable":true,
 		// Текстовое поле с никнеймом игрока в больших (large) ушах
 		"playerNameFull": {
-			"left": "<font color='#{colorEFF}'>{xeff:<2}</font> {nick}",
-			"right": "{nick} <font color='#{colorEFF}'>{xeff:2}</font>",
+			"left": "<font color='#{colorWN8}'>{xwn8:<2}</font> {nick}",
+			"right": "{nick} <font color='#{colorWN8}'>{xwn8:2}</font>",
 			"width": 0 // 0 - ширина по умолчанию
 		},
 		// Текстовое поле с никнеймом игрока в средних (medium) ушах
 		"playerNameCut": {
-			"left": "<font color='#{colorEFF}'>{xeff:<2}</font> {nick}",
-			"right": "{nick:.18} <font color='#{colorEFF}'>{xeff:2}</font>",
+			"left": "<font color='#{colorWN8}'>{xwn8:<2}</font> {nick}",
+			"right": "{nick:.18} <font color='#{colorWN8}'>{xwn8:2}</font>",
 			"width": 140
 		},
 		// Текстовое поле с названием танка в больших (large) и вторых средних (medium2) ушах
 		"vehicleName": {
-			"left": "<font color='#{colorTBattles}'>{vehicle}</font>",
-			"right": "<font color='#{colorTBattles}'>{vehicle}</font>",
+			"left": "<font color='#{colorWN8}'>{vehicle}</font>",
+			"right": "<font color='#{colorWN8}'>{vehicle}</font>",
 			"width": 80
 		},
 		// Видимость переключателя режимов ушей мышью
@@ -92,14 +95,14 @@
 		"enable": true,
 		// Текстовое поле с никнеймом игрока
 		"playerName": {
-			"left": "{spg_percent:<5.2f} <img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
-			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'> {spg_percent:5.2f}",
+			"left": "{spg_percent:<5.2f} <img src='{flag_url}' width='16' height='12'> <font color='#{colorWN8}'>{nick}</font>",
+			"right": "<font color='#{colorWN8}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'> {spg_percent:5.2f}",
 			"width": 180
 		},
 		// Текстовое поле с названием танка
 		"vehicleName": {
-			"left": "<font color='#{colorTBattles}'>{t_kb:2}</font> <font color='#{colorBattles}'>{kb:3}</font> <font color='#{colorWinrate}'>{winrate:2.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font>",
-			"right": "<font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:<2.0f}%</font> <font color='#{colorBattles}'>{kb:<3}</font> <font color='#{colorTBattles}'>{t_kb:<2}</font>",
+			"left": "<font color='#{colorTBattles}'>{t_kb:2}</font> <font color='#{colorBattles}'>{kb:3}</font> <font color='#{colorWinrate}'>{winrate:2.0f}%</font> <font color='#{colorWN8}'>{wn8:4}</font>",
+			"right": "<font color='#{colorWN8}'>{wn8:<4}</font> <font color='#{colorWinrate}'>{winrate:<2.0f}%</font> <font color='#{colorBattles}'>{kb:<3}</font> <font color='#{colorTBattles}'>{t_kb:<2}</font>",
 			"width": 100
 		}
 	},
@@ -109,23 +112,23 @@
 		"enable": true,
 		// Текстовое поле с никнеймом игрока
 		"playerName": {
-			"left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorEFF}'>{nick}</font>",
-			"right": "<font color='#{colorEFF}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'>"
+			"left": "<img src='{flag_url}' width='16' height='12'> <font color='#{colorWN8}'>{nick}</font>",
+			"right": "<font color='#{colorWN8}'>{nick:.16}</font> <img src='{flag_url}' width='16' height='12'>"
 		},
 		// Текстовое поле с названием танка
 		"vehicleName": {
-			"left": "<font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorEFF}'>{eff:4}</font>",
-			"right": "<font color='#{colorEFF}'>{eff:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font>"
+			"left": "<font color='#{colorBattles}'>{kb}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorWN8}'>{wn8:4}</font>",
+			"right": "<font color='#{colorWN8}'>{wn8:<4}</font> <font color='#{colorWinrate}'>{winrate:0.0f}%</font> <font color='#{colorBattles}'>{kb}</font>"
 		}
 	},
 	// Маркеры над танками
 	"marker": {
 		// Включить модуль marker
 		"enable": true,
-		// Текстовое поле с никнеймом игрока
-		"playerName": "{eff} {nick}",
-		// Текстовое поле с названием танка
-		"vehicleName": "{winrate:.0f}% {vehicle}"
+        // Текстовое поле с никнеймом игрока
+        "playerName": "<font color='#{colorWN8}'>{wn8}</font> {nick}",
+        // Текстовое поле с названием танка
+        "vehicleName": "<font color='#{colorWinrate}'>{winrate:.0f}%</font> {vehicle}"
 	},
 	// Настройка цветов
 	// Внимание, количество элементов во всех списках должно совпадать!
@@ -136,6 +139,8 @@
 		"EFF": [1, 615, 870, 1175, 1525, 1850],
 		// Соответствующие цветовые критерии для рейтинга WGR (ЛРИ)
 		"WGR": [1, 2495, 4345, 6425, 8625, 10040],
+        // Соответствующие цветовые критерии для рейтинга WN8
+		"WN8": [1, 400, 900, 1470, 2180, 2880],
 		// Соответствующие цветовые критерии для рейтинга WN7
 		"WN7": [1, 495, 860, 1220, 1620, 1965],
 		// Соответствующие цветовые критерии для рейтинга WN6

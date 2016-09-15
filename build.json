@@ -1,11 +1,12 @@
 {
-	"Version": "2.1.1",
-	"VersionWOT": "0.9.15.1.1",
+	"Version": "2.1.2",
+	"VersionWOT": "0.9.15.2",
 	"files":
 	[
 		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle.py",
 		"res_mods\\{VersionWOT}\\gui\\flash\\battle.swf",
 		"res_mods\\{VersionWOT}\\gui\\flash\\lobby.swf",
+        "res_mods\\{VersionWOT}\\gui\\flash\\battleVehicleMarkers.swf",
 		"res_mods\\configs\\StatsInBattle\\StatsInBattle.json",
 		"res_mods\\{VersionWOT}\\scripts\\client\\gui\\mods\\mod_stats_in_battle\\flags\\*"
 	]
